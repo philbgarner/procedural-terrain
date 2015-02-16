@@ -1,0 +1,32 @@
+[
+	{"name": "Sea", "layer": 0, "x": 1, "y": 1, "movecost": 1, "fertility": 0,  "excludeIDs": [], "colour": "#28e", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Grass", "layer": 0, "x": 2, "y": 1, "movecost": 2, "fertility": 3,  "excludeIDs": [], "colour": "#8e5", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Plains", "layer": 0, "x": 1, "y": 2, "movecost": 2, "fertility": 2, "excludeIDs": [], "colour": "#dd9", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Roads", "layer": 1, "x": 8, "y": 4, "movecost": -2, "fertility": 0, "excludeIDs": [0], "colour": "#eee", "bgImage": "image/bg_swampland.png"}	
+	,{"name": "Forest", "layer": 1, "x": 10, "y": 1, "movecost": 2, "fertility": 1, "excludeIDs": [0], "colour": "#00a500", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Hills", "layer": 1, "x": 13, "y": 4, "movecost": 2, "fertility": -1, "excludeIDs": [0], "colour": "#ae9", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Mountains", "layer": 1, "x": 15, "y": 1, "movecost": 3, "fertility": -1, "excludeIDs": [0], "colour": "#eee", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Crops", "layer": 1, "x": 6, "y": 5, "movecost": 0, "fertility": 3, "excludeIDs": [0], "colour": "#fdd", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Outpost", "layer": 2, "x": 11, "y": 10, "movecost": -1, "fertility": 0, "excludeIDs": [0], "colour": "#f00", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Settlement", "layer": 2, "x": 12, "y": 10, "movecost": -2, "fertility": 0, "excludeIDs": [0], "colour": "#fff", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Town", "layer": 2, "x": 13, "y": 10, "movecost": -2, "fertility": 0, "excludeIDs": [0], "colour": "#fff", "bgImage": "image/bg_swampland.png"}
+	,{"name": "unexplored", "layer": 2, "x": 13, "y": 7, "movecost": 0, "fertility": 0, "excludeIDs": [0], "colour": "#555", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Dead Forest", "layer": 2, "x": 9, "y": 4, "movecost": 1, "fertility": 0, "excludeIDs": [0], "colour": "#dc0", "bgImage": "image/bg_swampland.png"}
+	,{"name": "River", "layer": 1, "x": 1, "y": 3, "movecost": -1, "fertility": 2, "excludeIDs": [0], "colour": "#5af", "bgImage": "image/bg_swampland.png"}
+	,{"name": "River East/West", "layer": 1, "x": 2, "y": 3, "movecost": -1, "fertility": 2, "excludeIDs": [0], "colour": "#5af", "bgImage": "image/bg_swampland.png"}
+	,{"name": "River North/South", "layer": 1, "x": 3, "y": 3, "movecost": -1, "fertility": 2, "excludeIDs": [0], "colour": "#5af", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Riverbend West to North", "layer": 1, "x": 4, "y": 3, "movecost": -1, "fertility": 2, "excludeIDs": [0], "colour": "#5af", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Riverbend South to West", "layer": 1, "x": 4, "y": 2, "movecost": -1, "fertility": 2, "excludeIDs": [0], "colour": "#5af", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Riverbend East to North", "layer": 1, "x": 3, "y": 2, "movecost": -1, "fertility": 2, "excludeIDs": [0], "colour": "#5af", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Riverbend South to East", "layer": 1, "x": 3, "y": 1, "movecost": -1, "fertility": 2, "excludeIDs": [0], "colour": "#5af", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Forest Northwest", "layer": 1, "x": 9, "y": 2, "movecost": 2, "fertility": 1, "excludeIDs": [0], "colour": "#00a500", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Forest Northeast", "layer": 1, "x": 10, "y": 2, "movecost": 2, "fertility": 1, "excludeIDs": [0], "colour": "#00a500", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Forest Southwest", "layer": 1, "x": 9, "y": 3, "movecost": 2, "fertility": 1, "excludeIDs": [0], "colour": "#00a500", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Forest Southeast", "layer": 1, "x": 10, "y": 3, "movecost": 2, "fertility": 1, "excludeIDs": [0], "colour": "#00a500", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Forest Sparce", "layer": 1, "x": 9, "y": 1, "movecost": 2, "fertility": 1, "excludeIDs": [0], "colour": "#00a500", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Swamp", "layer": 0, "x": 13, "y": 5, "movecost": 4, "fertility": 1, "excludeIDs": [0], "colour": "#ff0", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Wall", "layer": 2, "x": 14, "y": 10, "movecost": 99, "fertility": 1, "excludeIDs": [0], "colour": "#ccc", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Wall Gate - Open", "layer": 2, "x": 14, "y": 10, "movecost": 0, "fertility": 1, "excludeIDs": [0], "colour": "#ccc", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Wall Gate - Closed", "layer": 2, "x": 14, "y": 10, "movecost": 99, "fertility": 1, "excludeIDs": [0], "colour": "#ccc", "bgImage": "image/bg_swampland.png"}
+	,{"name": "Plantation", "layer": 2, "x": 14, "y": 9, "movecost": 99, "fertility": 1, "excludeIDs": [0], "colour": "#ccc", "bgImage": "image/bg_swampland.png"}
+]

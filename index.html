@@ -1,0 +1,1075 @@
+<html>
+
+<head>
+
+<style>
+	body
+	{
+		font-family: Helvetica, Arial;
+		padding: 0px;
+		margin: 0px;
+	}
+	#canvas:
+	{
+		margin: 0px;
+		padding: 0px;
+	}
+
+</style>
+	<link href="js/jqueryui/jquery-ui.css" rel="stylesheet">
+	<!--//<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>//-->
+	<script src="js/chance.min.js"></script>
+	<script src="js/jqueryui/external/jquery/jquery.js"></script>
+	<script src="js/jqueryui/jquery-ui.js"></script>
+	<script src="http://ajax.cdnjs.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+	<!--//<script src="http://backbonejs.org/backbone-min.js"></script>//-->
+	<script src="js/backbone-min.js"></script>
+
+	<script>
+		// Global Variables
+
+		var tool_tileindex;
+		var tool_unitlist;
+		var tool_clickmode;
+		
+		var startGame = false;
+		
+		var unitRef = [];
+		
+		var playersMax = 10;
+		var playerCurrent = 0;
+		
+		var unitView;
+		var objectView;
+		var unitSelect;
+		var cityView;
+		var viewList;
+		var map;
+		var unitdefs;
+		var key = [];
+		
+		var TILE_UNEXPLORED = 11;
+		
+	</script>
+
+	<script src="js/gamelib.js"></script>
+
+	<script>
+		var evolveCount = 0;
+		function evolveBiomeUI()
+		{
+			if (evolveCount > 0)
+			{
+				window.setTimeout(function () {
+					map.mapdata.evolveBiomes();
+					evolveCount = evolveCount - 1;
+					evolveBiomeUI();
+				}, 400);
+			}
+			if (evolveCount < 0)
+			{
+				evolveCount = 0;
+			}
+		}
+	
+		var createUnit_TYPES = {
+			"Spearman": 0
+			,"Archer": 1
+			,"Settler": 2
+			,"Labourer": 3
+			,"Villager": 3
+		};
+		
+		function createUnit(map, x, y, typeID, ownerID, citizen)
+		{	
+			if (ownerID == undefined) { ownerID = 0; }
+			var typedef;
+			switch(typeID)
+			{
+				case 0:
+					typedef = new ModelUnit({
+						"name": "Spearman"
+						,"type": "Spearman"
+						,"spriteimage": "images/spearman32.png"
+						,"spritedefs": "spearman_spritedefs.json"
+						,"spriteset": new Spriteset({spriteimage: "images/spearman32.png", spritedefs: "spearman_spritedefs.json"})
+						,"moves": 4
+						,"health": 5
+						,"attack": 2
+						,"defense": 3
+						,"range": 1
+						,"bonusunitIDs": []
+						,"excludetileIDs": [0]
+						,"cost": 10
+						,"costitemIDs": []
+						,"costpopulation": 1
+						,"ownerID": ownerID
+					});
+					break;
+				case 1:
+					typedef = new ModelUnit({
+						"name": "Archer"
+						,"type": "Archer"
+						,"spriteimage": "images/archer32.png"
+						,"spritedefs": "archer_spritedefs.json"
+						,"spriteset": new Spriteset({spriteimage: "images/archer32.png", spritedefs: "archer_spritedefs.json"})
+						,"moves": 4
+						,"health": 5
+						,"attack": 2
+						,"range": 1
+						,"defense": 3
+						,"bonusunitIDs": []
+						,"excludetileIDs": [0]
+						,"cost": 10
+						,"costitemIDs": []
+						,"costpopulation": 1
+						,"ownerID": ownerID
+					});
+					break;
+				case 2:
+					typedef = new ModelUnit({
+						"name": "Settler"
+						,"type": "Settler"
+						,"spriteimage": "images/settler32.png"
+						,"spritedefs": "archer_spritedefs.json"
+						,"spriteset": new Spriteset({spriteimage: "images/settler32.png", spritedefs: "archer_spritedefs.json"})
+						,"moves": 5
+						,"health": 5
+						,"attack": 2
+						,"range": 2
+						,"defense": 3
+						,"bonusunitIDs": []
+						,"excludetileIDs": [0]
+						,"cost": 10
+						,"costitemIDs": []
+						,"costpopulation": 1
+						,"abilities": {
+							"settle": true
+						}
+						,"ownerID": ownerID
+					});
+					break;
+				case 3:
+					typedef = new ModelUnit({
+						"name": "Labourer"
+						,"type": "Labourer"
+						,"spriteimage": "images/labourer32.png"
+						,"spritedefs": "spearman_spritedefs.json"
+						,"spriteset": new Spriteset({spriteimage: "images/labourer32.png", spritedefs: "spearman_spritedefs.json"})
+						,"moves": 5
+						,"health": 5
+						,"attack": 2
+						,"range": 2
+						,"defense": 3
+						,"bonusunitIDs": []
+						,"excludetileIDs": [0]
+						,"cost": 10
+						,"costitemIDs": []
+						,"costpopulation": 1
+						,"abilities": {
+							"plow": true
+							,"villageLabour": true
+							,"buildWall": true
+						}
+						,"ownerID": ownerID
+					});
+					break;				
+			}
+			if (citizen != undefined)
+			{
+				typedef.citizen = citizen;
+			}
+			else
+			{
+				var voro = map.mapdata.get(x, y, 0).voronoi;
+				var bp = map.mapdata.voronoi[voro].name;
+				typedef.citizen = new ModelCitizen({birthplace: bp, name: bp, type: typedef.name});
+			}
+			typedef.x = x;
+			typedef.y = y;
+			typedef.newTurn();
+			typedef = jQuery.extend(true, {}, typedef);
+			map.addUnit(x, y, typedef);
+			map.mapdata.exploreTile(x, y, typedef);
+			return typedef;
+		}
+
+		function createSettlement(x, y, unit)
+		{
+			var unitRange = unit.range;
+			var ownerID = unit.ownerID;
+			var needles = [];
+			var city = map.mapdata.getCity(x, y, unitRange);
+			if (city != false)
+			{
+				needles.push(city);
+			}
+			if (needles.length == 0)
+			{		
+				var voronoiID = map.mapdata.get(x, y).voronoi;
+				var voronoiName = map.mapdata.voronoi[voronoiID].name;
+				var townname = voronoiName;
+				if (ownerID == 0)
+				{
+					townname = prompt("Settlement Name", voronoiName);
+				}
+				var citizen = [];
+				citizen.push(jQuery.extend(true, {}, unit.citizen));
+				var cityObj = new ModelSettlement({name: townname, ownerID: unit.ownerID, citizens: citizen, "x": x, "y": y});
+				map.settle(x, y, cityObj);
+				map.mapdata.removeUnit(x, y, unit);
+			}
+			else
+			{
+				if (ownerID == 0)
+				{
+					alert("There are " + needles.length + " cities within " + unitRange + " of this " + unit.name + ", you must settle a little farther away.");
+				}
+			}
+		}
+
+		// User Interface Views
+		var UnitList = Backbone.View.extend({
+			el: "#contents"
+			,maptile: undefined
+			,units: undefined
+			,maxWidth: 150
+			,width: 150
+			,initialize: function (arg)
+			{
+				if (arg.units != undefined)
+				{
+					this.units = arg.units;
+				}
+				else if (arg.maptile != undefined)
+				{
+					this.maptile = arg.maptile;
+				}
+			}
+			,render: function() {
+			}
+			,draw: function ()
+			{
+				var ctx = document.getElementById("contents").getContext("2d");
+				var left = 800 - this.width;
+
+				ctx.fillStyle = "rgba(0, 200, 255, 100)";
+				ctx.fillRect(left, 50, this.width, 500);
+				ctx.font = "14pt Arial";
+				ctx.fillStyle = "#000";
+				ctx.fillText("Units", left + 10, 70);
+
+				if (this.units.length = 1)
+				{
+					// Only one unit in the list? Go directly to unit orders view.
+					ctx.fillText(this.units[i].name, left + 10, 100 + (i * 15));
+				}
+			}
+		});
+		
+		var mapGenerateView = Backbone.View.extend({
+			el: "#MapSetup"
+			,seed: 0
+			,initialize: function (arg)
+			{
+				me = this;
+				if (arg.seed != undefined)
+				{
+					me.seed = arg.seed;
+					$("#mapSeed").val(chance.pad(me.seed, 16));
+				}
+				else
+				{
+					this.seed = chance.integer({min: 0, max: 9007199254740992});
+					$("#mapSeed").val(chance.pad(me.seed, 16))
+				}
+				$("#mapSeed").change(function (e) {
+					this.seed = parseInt($("#mapSeed").val());
+					if (me.seed < 0)
+					{
+						me.seed = parseInt(me.seed) * -1;
+					}
+					$("#mapSeed").val(chance.pad(me.seed, 16));
+				});
+				$("#mapWidth").val(map.mapdata.mapwidth);
+				$("#mapHeight").val(map.mapdata.mapheight);
+				$("#mapMaxRegions").val(map.mapdata.voronoi_max);
+				$("#mapMinRegions").val(map.mapdata.voronoi_min);
+				$("#mapSeaHeight").val(map.mapdata.sea_height);
+				$("#mapMountainHeight").val(map.mapdata.mountain_height);
+				$("#mapPlayerMax").val(playersMax);
+				
+				$("#mapSeedRandomize").click(function () {
+					me.seed = chance.integer({min: 0, max: 9007199254740992});
+					$("#mapSeed").val(chance.pad(me.seed, 16));
+				});
+				
+				$("#mapPreview").click(function () {
+					map.mapdata.mapwidth = parseInt($("#mapWidth").val());
+					map.mapdata.mapheight = parseInt($("#mapHeight").val());
+					map.mapdata.voronoi_max = parseInt($("#mapMaxRegions").val());
+					map.mapdata.voronoi_min = parseInt($("#mapMinRegions").val());
+					map.mapdata.sea_height = $("#mapSeaHeight").val();
+					map.mapdata.mountain_height = $("#mapMountainHeight").val();
+					playersMax = parseInt($("#mapPlayerMax").val());
+					map.mapdata.seed = parseInt(me.seed);			
+					map.mapdata.generate();	
+					map.mapdata.exploreAll(0);				
+				});
+				$("#mapContinue").click(function () {
+					map.mapdata.obscureAll(0);
+					placeStartingUnits();
+					startGame = true;
+					map.el = "contents";
+					map.scalex = 8;
+					map.scaley = 8;
+					$("#MapSetup").dialog("close");
+				});
+				$("#mapBiomeEvolve").click(function () {
+					evolveCount = parseInt($("#mapBiomeEvolveSteps").val());
+					evolveBiomeUI();
+				});
+				map.mapdata.generate();
+				map.mapdata.exploreAll(0);
+				
+				$(this.el).dialog("option", "minWidth", 600);
+				$(this.el).dialog("open");
+			}
+			,render: function (arg)
+			{
+
+			}
+		});
+		
+		var CityView = Backbone.View.extend({
+			el: "#CityView"
+			,tiles: []
+			,city: undefined
+			,left: 200
+			,top: 200
+			,width: 400
+			,height: 250
+			,initialize: function(arg)
+			{
+				if (arg.city != undefined)
+				{
+					this.city = arg.city;
+				}
+			}			
+			,show: function()
+			{
+				this.updateText();
+				$(this.el).dialog({title: this.city.name, autoOpen: true, left: this.left, top: this.top
+						,width: 500, height: 400});
+			}
+			,updateText: function()
+			{
+				$(this.el).find("#cityNameHeader").text(this.city.name);
+
+				$(this.el).find("#cityType").text(this.city.type);
+
+				$(this.el).find("#cityFoodAmt").text(this.city.food);
+
+				$(this.el).find("#cityOwner").text(this.city.ownerID);
+				$(this.el).find("#cityCitizens").empty();
+				for (var i=0; i < this.city.citizens.length; i++)
+				{
+					$(this.el).find("#cityCitizens").append("<li>" + this.city.citizens[i].name + " (" + this.city.citizens[i].type + ")</li>");
+				}
+			}
+			,render: function()
+			{
+				this.updateText();
+			}
+			,hide: function()
+			{
+				$(this.el).dialog("close");				
+			}
+
+		});
+		var ObjectView = Backbone.View.extend({
+			el: "#ObjectView"
+			,tiles: []
+			,object: undefined
+			,left: 200
+			,top: 200
+			,width: 400
+			,height: 250
+			,initialize: function(arg)
+			{
+				if (arg.object != undefined)
+				{
+					this.object = arg.object;
+				}
+			}			
+			,show: function()
+			{
+				this.updateText();
+				$(this.el).dialog({title: this.object.name, autoOpen: true, left: this.left, top: this.top
+						,width: 500, height: 400});
+			}
+			,updateText: function()
+			{
+			
+				$(this.el).find("#objectType").text(this.object.name);
+//				$(this.el).find("#objectProduces").text(this.object.produces);
+				$(this.el).find("#objectConsumes").text(this.object.consumes);
+				/*$(this.el).find("#cityNameHeader").text(this.city.name);
+
+				$(this.el).find("#cityType").text(this.city.type);
+
+				$(this.el).find("#cityFoodAmt").text(this.city.food);
+
+				$(this.el).find("#cityOwner").text(this.city.ownerID);
+				$(this.el).find("#cityCitizens").empty();
+				for (var i=0; i < this.city.citizens.length; i++)
+				{
+					$(this.el).find("#cityCitizens").append("<li>" + this.city.citizens[i].name + " (" + this.city.citizens[i].type + ")</li>");
+				}*/
+			}
+			,render: function()
+			{
+				this.updateText();
+			}
+			,hide: function()
+			{
+				$(this.el).dialog("close");				
+			}
+
+		});
+		var UnitView = Backbone.View.extend({
+			el: "#unitOrders"
+			,maptile: undefined
+			,unit: undefined
+			,left: 200
+			,initialize: function (arg)
+			{
+				if (arg.unit != undefined)
+				{
+					this.unit = arg.unit;
+				}
+				else if (arg.maptile != undefined)
+				{
+					this.maptile = arg.maptile;
+				}
+				else if (arg.unit != undefined)
+				{
+					this.unit = arg.unit;
+				}
+				this.updateText();
+				this.show();
+
+			}
+			,show: function()
+			{
+				/*$(this.el).css({
+					position: 'absolute'
+					,padding: 10
+					,"background-color": 'rgba(100, 200, 255, 125)'
+					,color: '#000'
+					,left: 0
+					,top: 550
+					,width: 300
+					,height: 50
+				});*/
+				$(this.el).dialog({title: this.unit.name, autoOpen: true, left: 825});
+			}
+			,hide: function()
+			{
+				$(this.el).dialog("close");
+			}
+			,render: function()
+			{
+			}
+			,updateText: function()
+			{
+				if (this.unit == undefined) { return; }
+				$(this.el).empty();
+				var me = this;
+				$(this.el).html("<p style='clear: right'>" + this.unit.name + " Moves: " + this.unit.move_points + " OwnerID: " + this.unit.ownerID + "</p><input type='button' value='North' id='movenorth'><input type='button' value='East' id='moveeast'><input type='button' value='South' id='movesouth'><input type='button' value='West' id='movewest'><input type='button' value='Settle' id='settle'><input type='button' value='Plow' id='plow'><input type='button' value='Build Wall' id='buildWall'><input type='button' id='noOrders' value='No Orders'>");
+				
+				$(this.el).find("#movenorth").click(function () {
+					var x = parseInt(me.unit.x);
+					var y = parseInt(me.unit.y);
+					me.unit = map.moveUnit(x, y, me.unit, x, y - 1);
+					me.unit.spriteset.setAnimation("Walk North");
+					me.updateText();
+				});
+				$(this.el).find("#movesouth").click(function () {
+					var x = parseInt(me.unit.x);
+					var y = parseInt(me.unit.y);
+					me.unit = map.moveUnit(x, y, me.unit, x, y + 1);
+					me.unit.spriteset.setAnimation("Walk South");
+					me.updateText();
+				});
+				$(this.el).find("#moveeast").click(function () {
+					var x = parseInt(me.unit.x);
+					var y = parseInt(me.unit.y);
+					me.unit = map.moveUnit(x, y, me.unit, x + 1, y);
+					me.unit.spriteset.setAnimation("Walk East");
+					me.updateText();
+				});
+				$(this.el).find("#movewest").click(function () {
+					var x = parseInt(me.unit.x);
+					var y = parseInt(me.unit.y);
+					me.unit = map.moveUnit(x, y, me.unit, x - 1, y);
+					me.unit.spriteset.setAnimation("Walk West");
+					me.updateText();
+				});
+				$(this.el).find("#noOrders").click(function () {
+					me.unit.noOrders();
+					me.hide();
+				});
+				$(this.el).find("#settle").hide();
+				$(this.el).find("#plow").hide();
+				$(this.el).find("#buildWall").hide();
+				if (this.unit.abilities != undefined)
+				{
+					if (this.unit.abilities.settle)
+					{
+						$(this.el).find("#settle").show();
+						var me = this;
+						$(this.el).find("#settle").click(function () {
+							createSettlement(me.unit.x, me.unit.y, me.unit);
+							map.mapdata.removeUnit(me.unit.x, me.unit.y, me.unit);
+							me.unit = undefined;
+							me.hide();
+						});
+					}
+					if (this.unit.abilities.plow)
+					{
+						$(this.el).find("#plow").show();
+						var me = this;
+						$(this.el).find("#plow").click(function () {
+							me.unit.noOrders();
+							map.mapdata.set(me.unit.x, me.unit.y, 7, 0);	// Crops
+							map.mapdata.set(me.unit.x, me.unit.y, 29, 2);	// Plantation
+							map.mapdata.set(me.unit.x, me.unit.y, 0, 1);	// Clear any forests, etc.
+							map.mapdata.addObject(me.unit.x, me.unit.y, new ModelBuilding({
+								name: "Plantation"
+								,produces: 'Nothing'
+								,consumes: 'Nothing'
+								,buildCost: 100
+							}));
+							map.mapdata.removeUnit(me.unit.x, me.unit.y, me.unit);
+							me.unit = undefined;
+							me.hide();							
+						});
+					}
+					var city = map.mapdata.getCity(this.unit.x, this.unit.y, 3);
+					if (city)
+					{
+						if (this.unit.abilities.buildWall)
+						{
+							$(this.el).find("#buildWall").show();
+							var me = this;
+							$(this.el).find("#buildWall").click(function () {
+								me.unit.noOrders();
+								map.mapdata.set(me.unit.x, me.unit.y, 26, 2);	// Build Wall
+								me.hide();							
+							});
+						}
+					}
+					else
+					{
+						$(this.el).find("#buildWall").hide();
+					}
+				}
+				$(this.el).find("p").css({padding: 0, margin: 0});
+			}
+			,draw: function ()
+			{	
+				//if (this.unit == undefined) { $(this.el).stop().hide("fast"); return; }
+			}
+		});
+		var UnitSelectView = Backbone.View.extend({
+			el: "#UnitSelection"
+			,maptile: undefined
+			,unit: undefined
+			,left: 200
+			,initialize: function (arg)
+			{
+				if (arg.unit != undefined)
+				{
+					this.unit = arg.unit;
+				}
+				else if (arg.maptile != undefined)
+				{
+					this.maptile = arg.maptile;
+				}
+				else if (arg.units != undefined)
+				{
+					this.units = arg.units;
+				}
+				this.updateText();
+				this.show();
+
+			}
+			,show: function()
+			{
+				$(this.el).dialog({autoOpen: true, left: 5, top: 400});
+				$(this.el).find("ul").css({
+					padding: 0
+					,margins: 0
+					,color: '#000'
+					,"list-style-type": "none"
+					,"cursor": "pointer"
+				});
+				$(this.el).find("ul > li").hover(
+					function () {
+						$(this).css("background-color", "#999");
+					}
+					,function (){
+						$(this).css("background-color", "transparent");
+					}
+				);
+			}
+			,hide: function()
+			{
+				$(this.el).dialog("close");
+			}
+			,render: function()
+			{
+				this.updateText();
+			}
+			,updateText: function()
+			{
+				if (this.units == undefined) { return; }
+				var ul = $(this.el).find("ul");
+				ul.empty();
+				var me = this;
+				
+				for(var i=0; i < this.units.length; i++)
+				{
+					var newEl = $("<li>" + this.units[i].name + "</li>");
+					var myUnit = me.units[i];
+					$(newEl).click(function () {
+						me.hide();
+						unitView = new UnitView({unit: myUnit});
+						unitView.updateText();
+						unitView.show();
+					});
+					ul.append(newEl);
+				}
+			}
+		});
+	</script>
+
+	<script>
+		$( document ).ajaxError(function( event, jqxhr, settings, thrownError ) {
+			console.log(event, jqxhr, settings, thrownError);
+		});
+		
+		function placeStartingUnits()
+		{
+			var placedCount = 0;
+			var placedID = 0;
+			for (var i=0; i < map.mapdata.voronoi.length; i++)
+			{
+				if (map.mapdata.voronoi[i].height < map.mapdata.mountain_height
+					&& map.mapdata.voronoi[i].height > map.mapdata.sea_height
+				)
+				{
+					createUnit(map, map.mapdata.voronoi[i].x, map.mapdata.voronoi[i].y, 2, placedID);
+					if (placedID == playerCurrent)
+					{
+						map.scrollx = map.mapdata.voronoi[i].x;
+						map.scrolly = map.mapdata.voronoi[i].y;
+						map.scrollMapX(-11);
+						map.scrollMapY(-10);
+					}
+					placedCount++;
+					placedID++;
+				}
+				if (placedCount == playersMax)
+				{
+					break;
+				}
+			}
+		}
+			
+		function doNewTurn()
+		{
+			if (unitView != undefined)
+			{
+				unitView.hide();
+				unitView = undefined;			
+			}
+			map.newTurn();
+			
+			if (cityView != undefined)
+			{
+				cityView.render();
+			}
+		}
+
+		$(document).ready(function () {
+
+			/*
+			var PageRouter = Backbone.Router.extend({
+				routes: {
+					'': 'tileset'
+				}
+			});
+
+			window.siteRouter = new PageRouter();			
+			window.siteRouter.on("route:tileset", function() {	currentPage = new Tileset(); currentPage.load("images/tileset16.png", true); currentPage.render(); });
+			Backbone.history.start({pushState: true});*/
+
+			
+			map = new Map({mapdata: new ModelMap(), tileset: new Tileset({tileimage: "images/terrain.png", tiledefs: "tiledefs.json"})});
+			placeStartingUnits();
+
+			unitsList = new UnitList({});
+
+
+			viewList = [];
+			
+						
+			viewList.push(map);		
+			
+			$("#canvas_mapsetup").click(function (e) {
+				var ms = $(this); //$("#MapSetup");
+				var x = parseInt(	(e.clientX - ms.offset().left) / map.scalex - 12);
+				var y = parseInt(	(e.clientY - ms.offset().top) / map.scaley - 10);
+				map.scrollMapXAbs(x);
+				map.scrollMapYAbs(y);
+			});
+			
+			$("#mapWidth").change(function (e) {
+				map.mapdata.mapwidth = parseInt($("#mapWidth").val());
+				map.scalex = parseInt(256 / map.mapdata.mapwidth);
+				if (map.scalex < 1)
+				{
+					map.scalex = 1;
+				}
+			});
+			$("#mapHeight").change(function (e) {
+				map.mapdata.mapheight = parseInt($("#mapHeight").val());
+				map.scaley = parseInt(256 / map.mapdata.mapheight);
+				if (map.scaley < 1)
+				{
+					map.scaley = 1;
+				}
+			});
+			
+			var w = window.setInterval(function () {
+				if (startGame)
+				{
+					for (var i=0; i < viewList.length; i++)
+					{
+						viewList[i].draw();
+					}
+					if (key['77'])
+					{
+						map.drawMini();
+					}
+					
+				}
+				else
+				{
+					var el = map.el;
+					map.el = "canvas_mapsetup";
+					map.drawMini();
+					map.el = "contents";
+					map.draw();
+					map.el = el;
+				}
+
+				// If the user is holding down the directional keys, scroll the map.
+				if (key['38'])
+				{
+					// Up arrow
+					map.scrollMapY(-1);
+				}
+				if (key['40'])
+				{
+					// Down arrow
+					map.scrollMapY(1);
+				}
+				if (key['37'])
+				{
+					// Left arrow
+					map.scrollMapX(-1);
+				}
+				if (key['39'])
+				{
+					// Right arrow
+					map.scrollMapX(1);
+				}
+				
+			}, 200);
+
+
+			$("#mapSetupTabs").tabs();
+			$("#MapSetup").dialog({
+				autoOpen: false,
+				width: 400
+			});
+			
+			var MapGenerator = new mapGenerateView({});			
+
+			$("#contents").mousemove(function (e) {
+				var tilex = Math.floor(e.clientX / 32) + map.scrollx;
+				var tiley = Math.floor(e.clientY / 32) + map.scrolly; 
+
+				if (e.buttons == 1 && tool_tileindex != undefined) {
+					map.mapdata.set(tilex, tiley, tool_tileindex, map.tset.getTile(tool_tileindex).layer);
+				}
+			});
+			
+			
+			$("#contents").mouseup(function (e) {
+				var tilex = Math.floor(e.clientX / 32) + map.scrollx;
+				var tiley = Math.floor(e.clientY / 32) + map.scrolly; 
+
+				if (unitView != undefined && e.buttons == 1)
+				{
+					unitView.hide();
+					unitView = undefined;
+				}				
+				if (tool_tileindex == undefined && unitView == undefined && e.buttons == 1) {
+					map.tooltip.text = '';
+					var tileunits = map.mapdata.getUnits(tilex, tiley);
+					var tileobjects = map.mapdata.getObjects(tilex, tiley);
+					console.log("Tileunits: ", tilex, tiley, tileunits);
+					console.log("Tileobjects: ", tilex, tiley, tileobjects);
+					if (tileunits == undefined) { return; }
+					if (tileunits.length == 1 && tileunits[0].ownerID == playerCurrent)
+					{
+						unitView = new UnitView({unit: tileunits[0]});
+						unitView.updateText();
+						unitView.show();
+						return;
+					}
+					else if (tileunits.length > 1)
+					{
+						//TODO: For multiple units, same view as above, plus a unitListView to allow selecting units on the same tile.
+						unitSelect = new UnitSelectView({units: tileunits });
+						unitSelect.updateText();
+						unitSelect.show();
+						return;
+					}
+
+					var cityObj = map.mapdata.getCity(tilex, tiley, 0);
+					if (cityObj != undefined && cityObj != false)
+					{
+						cityView = new CityView({city: cityObj});
+						cityView.show();
+					}
+
+					var object = map.mapdata.getObjects(tilex, tiley);
+					if (object != undefined && object != false)
+					{
+						objectView = new ObjectView({'object': object[0]});
+						objectView.show();
+					}
+				}
+			});
+
+			$(document).on("contextmenu", "#contents", function (e) {
+				var tilex = Math.floor(e.clientX / 32) + map.scrollx;
+				var tiley = Math.floor(e.clientY / 32) + map.scrolly; 
+
+				var tile0 = map.mapdata.get(tilex, tiley, 0);
+				var tile1 = map.mapdata.get(tilex, tiley, 1);
+				var tile2 = map.mapdata.get(tilex, tiley, 2);
+
+				//console.log("VORONOI ID:", tile0, tilex, tiley, "Move Cost:", map.mapdata.moveCost(tilex, tiley));
+				var message = "Tile ID " + tile0.tileid;
+				if (map.tooltip.text.length > 0
+					&& map.tooltip.x == tilex && map.tooltip.y == tiley)
+				{
+					message = '';
+				}
+				map.tooltip = {x: tilex, y: tiley, text: message};
+				
+				return false; 
+			});
+
+			function checkKeys()
+			{
+				return;
+			}
+			function checkKeysDown()
+			{
+				return;
+			}
+
+			$( document ).keyup(function( event, jqxhr, settings, thrownError ) {
+				checkKeys();
+				key[event.keyCode] = false;
+			});
+			$( document ).keydown(function( event, jqxhr, settings, thrownError ) {
+				key[event.keyCode] = true;
+				checkKeysDown();
+			});
+
+		});
+</script>
+</head>
+
+<body>
+
+<canvas id="contents" width="800px" height="640px" style="z-index: 0"></canvas>
+<a id="tooltip" title="Test" style="position: absolute"></a>
+
+<!--// <input type='button' value='Clear Tile' onclick="tool_tileindex = undefined; $('#tiles > li').css('color', '#000');"> //-->
+<input type='button' value='New Turn' onclick="doNewTurn();">
+<div id="tiles" width="800px">
+	
+</div>
+
+<div id="kb" style="display: none;" width="800px">
+	<div id="tiledefs" style="display: none;"></div>
+</div>
+
+<div id="unitOrders"></div>
+
+</body>
+
+<div id="CityView" height="400px" width="500px" style="display: none;">
+
+	<p>
+		<h2 id='cityNameHeader'>City Name</h2>
+		<p>
+			Owner: <span id='cityOwner'></span>
+		</p>
+		
+		<p>
+			<b><span id='cityType'></span></b> <br/>
+			Food: <span id='cityFoodAmt'></span> / 10 <br/>
+			
+		</p>
+		
+		<p>
+			Citizens:
+			<ul id='cityCitizens'>
+				
+			</ul>
+		</p>
+	</p>
+
+</div>
+
+<div id="ObjectView" height="400px" width="500px" style="display: none;">
+
+	<p>
+		
+		<p>
+			<b><span id='objectType'></span></b> <br/>
+			Produces: <span id='productionControls'><select id='objectProduces'>
+						<option selected></option>
+						<option>Wheat</option>
+						<option>Rice</option>
+						<option>Corn</option>
+						<option>Mutton</option>
+						<option>Beef</option>
+						<option>Oranges</option>
+						<option>Cherries</option>
+						<option>Grapes</option>
+						<option>Pears</option>
+						<option>Olives</option>
+					</select> <input type='button' value='Change'> <span>(cost to change)</span>
+				</span>
+			<br/>
+			Consumes: <span id='objectConsumption'></span> <br/>
+			
+		</p>
+	
+	</p>
+
+</div>
+
+<div id="MapSetup" height='250px' title="Game Setup" style="display: none;">
+	<canvas id='canvas_mapsetup' width='270px' height='270px' style="margin: 20px"></canvas>
+
+	<div id="mapSetupTabs">
+		<ul>
+			<li><a href="#tabs-1">Map Settings</a></li>
+			<li><a href="#tabs-2">Player Settings</a></li>
+			<li><a href="#tabs-3">Tools</a></li>
+		</ul>
+		<div id="tabs-1">
+			<p>
+				Seed: <input type='text' id='mapSeed' style="width: 175px;"> <input type='button' id='mapSeedRandomize' value='#'> <br/>
+				Width: <input type='text' id='mapWidth' style="width: 50px;"> <br/>
+				Height: <input type='text' id='mapHeight' style="width: 50px;"> <br/>
+				Region Minimum: <input type='text' id='mapMinRegions' style="width: 50px;"> <br/>
+				Region Maximum: <input type='text' id='mapMaxRegions' style="width: 50px;"> <br/>
+				<hr/>
+				Sea Height: <input type='text' width='20px' id='mapSeaHeight' style="width: 50px;"> <br/>
+				Mountain Height: <input type='text' width='20px' id='mapMountainHeight' style="width: 50px;"> <br/>
+			</p>
+		</div>
+		<div id="tabs-2">
+			<p>
+				Max Number of Players: <input type='text' id='mapPlayerMax' style="width: 50px;"> <br/>
+				<div><span style="float: left; margin-right:8px;">Starting Units:</span> <select id='mapStartingUnits' style="width:150px;" size=8 multiple>
+							<option value='2' selected="selected">Settler</option>
+							<option value='0'>Spearman</option>
+							<option value='1'>Archer</option>
+						</select>
+				</div>
+			</p>
+		</div>
+		<div id="tabs-3">
+			<p>
+				<input type='button' value="Evolve Biomes" id='mapBiomeEvolve'> <input type='text' value='1' id='mapBiomeEvolveSteps'> steps.
+			</p>
+		</div>
+	</div>	
+	<p>
+		<input type='button' id='mapPreview' value='Generate'> <input id='mapContinue' type='button' value="Continue">
+	</p>
+</div>
+
+
+<div id="PlayerSetup" height="250px" width="300px" title="Player Setup" style="display: none">
+	
+	<p>
+		Player Name: <input type="text" id="playerName" style="width: 50px;"> <br/>
+		Class: 	<select id="playerClass" style="width: 150px">
+				<option value="0" selected>Spearman</option>
+				<option value="1">Archer</option>
+			</select>
+
+		<hr/>
+		
+		Attack: <input type="text" id="playerStrength" style="width: 50px;"> <br/>
+		Defense: <input type="text" id="playerDefense" style="width: 50px;"> <br/>
+		Wisdom: <input type="text" id="playerWisdom" style="width: 50px;"> <br/>
+		Constitution: <input type="text" id="playerConstitution" style="width: 50px;"> <br/>
+		Agility: <input type="text" id="playerAgility" style="width: 50px;"> <br/>
+		
+		<hr/>
+		
+		Race: 	<select id="playerRace" style="width: 150px">
+				<option value="human" selected>Human</option>
+			</select>
+	</p>	
+	
+	<p>
+		<input type='button' id='playerContinue' value='Continue'>
+	</p>
+	
+</div>
+
+<div id="UnitSelection" height="250px" width="125px" title="Select Unit" style="display: none">
+
+	<ul style="width: 100%; height: 100%; padding: 0px; margin: 0px">
+	
+		
+		
+	</ul>
+
+</div>
+
+
+
+	<p>
+	</p>
+
+</div>
+
+</html>
