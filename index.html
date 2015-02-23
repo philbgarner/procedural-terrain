@@ -401,6 +401,11 @@
 				{
 					this.object = arg.object;
 				}
+				var me = this;
+				$(this.el).find("#changeproduction").click(function () {				
+					me.object.produces = $(me.el).find("#objectProduces option").filter(":selected").text();
+					me.updateText();
+				});
 			}			
 			,show: function()
 			{
@@ -410,8 +415,8 @@
 			}
 			,updateText: function()
 			{
-			
-				$(this.el).find("#objectType").text(this.object.name);
+				console.log("Objectview: ", this.object);			
+				$(this.el).find("#currentProduction").text(this.object.produces);
 //				$(this.el).find("#objectProduces").text(this.object.produces);
 				$(this.el).find("#objectConsumes").text(this.object.consumes);
 				/*$(this.el).find("#cityNameHeader").text(this.city.name);
@@ -958,8 +963,8 @@
 		
 		<p>
 			<b><span id='objectType'></span></b> <br/>
-			Produces: <span id='productionControls'><select id='objectProduces'>
-						<option selected></option>
+			Produces: <span id='currentProduction'></span>
+			<br><span id='productionControls'><select id='objectProduces'>
 						<option>Wheat</option>
 						<option>Rice</option>
 						<option>Corn</option>
@@ -970,10 +975,14 @@
 						<option>Grapes</option>
 						<option>Pears</option>
 						<option>Olives</option>
-					</select> <input type='button' value='Change'> <span>(cost to change)</span>
+					</select> <input type='button' id='changeProduction' value='Change'/> <span id='changecost'>(cost to change)</span>
 				</span>
 			<br/>
-			Consumes: <span id='objectConsumption'></span> <br/>
+			Send Production to: <span id='productionCity'></span>
+			<br><span id='productionTarget'><select id='productionCityList'>
+				</select> <input type='button' id='changeProductionCity' value='Change'/>
+			</span>
+			Consumes: <span id='objectConsumption'>Nothing</span> <br/>
 			
 		</p>
 	

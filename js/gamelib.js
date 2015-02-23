@@ -1503,12 +1503,13 @@
 			,luxury: false
 			,food: true
 			,weapon: false
-			,armour: false
+			,armor: false
 			,helm: false
 			,shield: false
 			,arrow: false
 			,qty: 1
 			,techRequirement: []
+			,consumption: []
 			,initialize: function(args)
 			{
 				if (args.name != undefined)
@@ -1530,7 +1531,7 @@
 			,luxury: false
 			,food: true
 			,weapon: false
-			,armour: false
+			,armor: false
 			,helm: false
 			,shield: false
 			,arrow: false
@@ -1550,7 +1551,7 @@
 			,luxury: false
 			,food: true
 			,weapon: false
-			,armour: false
+			,armor: false
 			,helm: false
 			,shield: false
 			,arrow: false
@@ -1570,7 +1571,7 @@
 			,luxury: false
 			,food: true
 			,weapon: false
-			,armour: false
+			,armor: false
 			,helm: false
 			,shield: false
 			,arrow: false
@@ -1590,7 +1591,7 @@
 			,luxury: false
 			,food: true
 			,weapon: false
-			,armour: false
+			,armor: false
 			,helm: false
 			,shield: false
 			,arrow: false
@@ -1610,7 +1611,7 @@
 			,luxury: false
 			,food: true
 			,weapon: false
-			,armour: false
+			,armor: false
 			,helm: false
 			,shield: false
 			,arrow: false
@@ -1630,7 +1631,7 @@
 			,luxury: false
 			,food: true
 			,weapon: false
-			,armour: false
+			,armor: false
 			,helm: false
 			,shield: false
 			,arrow: false
@@ -1650,7 +1651,7 @@
 			,luxury: false
 			,food: true
 			,weapon: false
-			,armour: false
+			,armor: false
 			,helm: false
 			,shield: false
 			,arrow: false
@@ -1670,7 +1671,7 @@
 			,luxury: false
 			,food: true
 			,weapon: false
-			,armour: false
+			,armor: false
 			,helm: false
 			,shield: false
 			,arrow: false
@@ -1690,7 +1691,7 @@
 			,luxury: false
 			,food: true
 			,weapon: false
-			,armour: false
+			,armor: false
 			,helm: false
 			,shield: false
 			,arrow: false
@@ -1710,7 +1711,7 @@
 			,luxury: false
 			,food: true
 			,weapon: false
-			,armour: false
+			,armor: false
 			,helm: false
 			,shield: false
 			,arrow: false
@@ -1730,14 +1731,291 @@
 			,luxury: false
 			,food: true
 			,weapon: false
-			,armour: false
+			,armor: false
 			,helm: false
 			,shield: false
 			,arrow: false
 			,qty: 1
 			,techRequirement: ["Orchards"]
 		});
-			
+		
+		
+		var ModelRawhide = ModelItem.extend({
+			name: "Rawhide"
+			,variantName: ""
+			,url: ""
+			,typeid: "material"
+			,manufactureid: "farm"
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: false
+			,material: true
+			,weapon: false
+			,armor: false
+			,helm: false
+			,shield: false
+			,arrow: false
+			,qty: 1
+			,techRequirement: ["Pastoralism"]
+		});
+		var ModelLeather = ModelItem.extend({
+			name: "Leather"
+			,variantName: ""
+			,url: ""
+			,typeid: "material"
+			,manufactureid: "tannery"
+			,consumption: ['rawhide']
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: false
+			,material: true
+			,weapon: false
+			,armor: false
+			,helm: false
+			,shield: false
+			,arrow: false
+			,qty: 1
+			,techRequirement: ["Pastoralism"]
+		});
+		
+		
+		var ModelIronOre = ModelItem.extend({
+			name: "Iron Ore"
+			,variantName: ""
+			,url: ""
+			,typeid: "material"
+			,manufactureid: "mine"
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: false
+			,material: true
+			,weapon: false
+			,armor: false
+			,helm: false
+			,shield: false
+			,arrow: false
+			,qty: 1
+			,techRequirement: ["Iron Smelting"]
+		});
+		var ModelIronIngot = ModelItem.extend({
+			name: "Iron Ingot"
+			,variantName: ""
+			,url: ""
+			,typeid: "material"
+			,manufactureid: "blacksmith"
+			,consumption: ['Coal', 'Iron Ore']
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: false
+			,material: true
+			,weapon: false
+			,armor: false
+			,helm: false
+			,shield: false
+			,arrow: false
+			,qty: 1
+			,techRequirement: ['Iron Smelting']
+		});
+		var ModelIronSpear = ModelItem.extend({
+			name: "Iron Spear"
+			,variantName: ""
+			,url: ""
+			,typeid: "weapon"
+			,manufactureid: "blacksmith"
+			,consumption: ['Coal', 'Iron Ingot', 'Wood']
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: false
+			,material: false
+			,weapon: true
+			,armor: false
+			,helm: false
+			,shield: false
+			,arrow: false
+			,qty: 1
+			,techRequirement: ["Blacksmithing"]
+		});
+		var ModelIronSword = ModelItem.extend({
+			name: "Iron Sword"
+			,variantName: ""
+			,url: ""
+			,typeid: "weapon"
+			,manufactureid: "blacksmith"
+			,consumption: ['Coal', 'Iron Ingot', 'Iron Ingot']
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: false
+			,material: false
+			,weapon: true
+			,armor: false
+			,helm: false
+			,shield: false
+			,arrow: false
+			,qty: 1
+			,techRequirement: ["Swordsmithing"]
+		});
+		var ModelIronHalberd = ModelItem.extend({
+			name: "Iron Halberd"
+			,variantName: ""
+			,url: ""
+			,typeid: "weapon"
+			,manufactureid: "blacksmith"
+			,consumption: ['Coal', 'Iron Ingot', 'Wood']
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: false
+			,material: false
+			,weapon: true
+			,armor: false
+			,helm: false
+			,shield: false
+			,arrow: false
+			,qty: 1
+			,techRequirement: ["Swordsmithing"]
+		});
+		var ModelIronHelm = ModelItem.extend({
+			name: "Iron Helm"
+			,variantName: ""
+			,url: ""
+			,typeid: "armor"
+			,manufactureid: "blacksmith"
+			,consumption: ['Coal', 'Iron Ingot', 'Iron Ingot']
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: false
+			,material: false
+			,weapon: false
+			,armor: false
+			,helm: true
+			,shield: false
+			,arrow: false
+			,qty: 1
+			,techRequirement: ["Armorsmithing"]
+		});
+		var ModelIronMail = ModelItem.extend({
+			name: "Iron Mail"
+			,variantName: ""
+			,url: ""
+			,typeid: "armor"
+			,manufactureid: "blacksmith"
+			,consumption: ['Coal', 'Iron Ingot', 'Iron Ingot']
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: false
+			,material: false
+			,weapon: false
+			,armor: true
+			,helm: false
+			,shield: false
+			,arrow: false
+			,qty: 1
+			,techRequirement: ["Armorsmithing"]
+		});
+		var ModelIronPlatemail = ModelItem.extend({
+			name: "Iron Platemail"
+			,variantName: ""
+			,url: ""
+			,typeid: "armor"
+			,manufactureid: "blacksmith"
+			,consumption: ['Coal', 'Coal', 'Iron Ingot', 'Iron Ingot', 'Iron Ingot']
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: false
+			,material: false
+			,weapon: false
+			,armor: true
+			,helm: false
+			,shield: false
+			,arrow: false
+			,qty: 1
+			,techRequirement: ["Armorsmithing"]
+		});
+		var ModelIronShield = ModelItem.extend({
+			name: "Iron Shield"
+			,variantName: ""
+			,url: ""
+			,typeid: "armor"
+			,manufactureid: "blacksmith"
+			,consumption: ['Coal', 'Iron Ingot', 'Iron Ingot']
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: false
+			,material: false
+			,weapon: false
+			,armor: false
+			,helm: false
+			,shield: true
+			,arrow: false
+			,qty: 1
+			,techRequirement: ["Armorsmithing"]
+		});
+
+		var ModelLeatherShield = ModelItem.extend({
+			name: "Leather Shield"
+			,variantName: ""
+			,url: ""
+			,typeid: "armor"
+			,manufactureid: "leatherworker"
+			,consumption: ['Rawhide', 'Wood']
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: false
+			,material: false
+			,weapon: false
+			,armor: false
+			,helm: false
+			,shield: true
+			,arrow: false
+			,qty: 1
+			,techRequirement: ["Leatherworking"]
+		});
+
+		var ModelLeatherSling = ModelItem.extend({
+			name: "Leather Sling"
+			,variantName: ""
+			,url: ""
+			,typeid: "armor"
+			,manufactureid: "leatherworker"
+			,consumption: ['Rawhide']
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: false
+			,material: false
+			,weapon: true
+			,armor: false
+			,helm: false
+			,shield: false
+			,arrow: false
+			,qty: 1
+			,techRequirement: ["Leatherworking"]
+		});
+
 
 // ******************************************************		
 		
