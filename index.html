@@ -41,6 +41,7 @@
 		
 		var unitView;
 		var objectView;
+		var helpview;
 		var unitSelect;
 		var cityView;
 		var viewList;
@@ -49,6 +50,8 @@
 		var key = [];
 		
 		var TILE_UNEXPLORED = 11;
+		
+		var itemlist;
 		
 	</script>
 
@@ -587,6 +590,37 @@
 				//if (this.unit == undefined) { $(this.el).stop().hide("fast"); return; }
 			}
 		});
+		var HelpView = Backbone.View.extend({
+			el: "#Help"
+			,name: "Help"
+			,initialize: function (arg)
+			{
+				this.refresh();
+			}
+			,model: itemlist
+			,refresh: function ()
+			{
+				for (var i in this.model)
+				{
+					var item = $(this.el).find("ul").append("<li>" + i + "</li>");
+				}
+				$(this.el).find("ul > li").stop().click(function () {
+					var itemname = $(this).text();
+					$("#helpContent").html(itemlist[itemname].description);
+				});
+			}
+			,show: function ()
+			{
+				this.refresh();
+				$(this.el).dialog({autoOpen: true, left: 10, top: 10
+						,width: 500, height: 400});
+			}
+			,hide: function ()
+			{
+				$(this.el).dialog({title: this.object.name, autoOpen: true, left: this.left, top: this.top
+						,width: 500, height: 400});
+			}
+		});
 		var UnitSelectView = Backbone.View.extend({
 			el: "#UnitSelection"
 			,maptile: undefined
@@ -910,6 +944,8 @@
 				checkKeysDown();
 			});
 
+			helpview = new HelpView({});
+
 		});
 </script>
 </head>
@@ -921,6 +957,7 @@
 
 <!--// <input type='button' value='Clear Tile' onclick="tool_tileindex = undefined; $('#tiles > li').css('color', '#000');"> //-->
 <input type='button' value='New Turn' onclick="doNewTurn();">
+<input type='button' value='Help' onclick="helpview.show();">
 <div id="tiles" width="800px">
 	
 </div>
@@ -1079,6 +1116,16 @@
 	<p>
 	</p>
 
+</div>
+
+<div id="Help" title="Help" style="display: none">
+	
+	<ul style="width: 150px; padding: 0px; margin: 0px; height 100%; border-style: solid; border-width: 1px; list-style-type: none; cursor: pointer; float: left;">
+	</ul>
+	
+	<p id='helpContent' style="widh: 600px">
+	</p>
+	
 </div>
 
 </html>

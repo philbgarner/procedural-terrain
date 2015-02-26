@@ -1494,6 +1494,7 @@
 		var ModelItem = Backbone.Model.extend({
 			name: ""
 			,variantName: ""
+			,description: ""
 			,url: ""
 			,typeid: "food"
 			,manufactureid: "farm"
@@ -1516,12 +1517,17 @@
 				{
 					this.name = args.name;
 				}
+				if (args.description != undefined)
+				{
+					this.description = args.description;
+				}
 			}
 		});
 
 		var ModelWheat = ModelItem.extend({
 			name: "Grain"
 			,variantName: "Wheat"
+			,description: "Wheat is produced in farms, and can be exported and ground in mills into flour." 
 			,url: ""
 			,typeid: "food"
 			,manufactureid: "farm"
@@ -1537,11 +1543,18 @@
 			,arrow: false
 			,qty: 1
 			,techRequirement: ["Farming"]
-		});	
+		});
+		var ModelFlour = ModelWheat.extend({
+			name: "Flour"
+			,variantName: "Wheat"
+			,description: "Wheat flour is ground in mills from wheat harvested on farms or sold on the market."
+			,manufactureid: "mill"
+		});
 		
 		var ModelRice = ModelItem.extend({
 			name: "Grain"
 			,variantName: "Rice"
+			,description: "Rice is grown in farms and can be exported as is, or turned into other commodities."
 			,url: ""
 			,typeid: "food"
 			,manufactureid: "farm"
@@ -1562,6 +1575,7 @@
 		var ModelCorn = ModelItem.extend({
 			name: "Grain"
 			,variantName: "Corn"
+			,description: "Corn is grown on farms and can be exported as is, or turned into other commodities."
 			,url: ""
 			,typeid: "food"
 			,manufactureid: "farm"
@@ -1582,6 +1596,7 @@
 		var ModelMutton = ModelItem.extend({
 			name: "Meat"
 			,variantName: "Mutton"
+			,description: "Mutton is harvested from sheep grown on farms and can be exported as is, or sold on the market."
 			,url: ""
 			,typeid: "food"
 			,manufactureid: "farm"
@@ -1602,6 +1617,7 @@
 		var ModelBeef = ModelItem.extend({
 			name: "Meat"
 			,variantName: "Beef"
+			,description: "Beef is harvested from cows grown on farms and can be exported as is, or sold on the market."
 			,url: ""
 			,typeid: "food"
 			,manufactureid: "farm"
@@ -1622,6 +1638,7 @@
 		var ModelApple = ModelItem.extend({
 			name: "Fruit"
 			,variantName: "Apple"
+			,description: "Apples are grown in orchards and can be exported as is, or turned into other commodities."
 			,url: ""
 			,typeid: "food"
 			,manufactureid: "orchard"
@@ -1642,6 +1659,7 @@
 		var ModelOrange = ModelItem.extend({
 			name: "Fruit"
 			,variantName: "Orange"
+			,description: "Oranges are grown in groves and can be exported as is, or turned into other commodities."
 			,url: ""
 			,typeid: "food"
 			,manufactureid: "orchard"
@@ -1662,6 +1680,7 @@
 		var ModelCherry = ModelItem.extend({
 			name: "Fruit"
 			,variantName: "Cherry"
+			,description: "Cherries are grown in orchards and can be exported as is, or turned into other commodities."
 			,url: ""
 			,typeid: "food"
 			,manufactureid: "orchard"
@@ -1682,6 +1701,7 @@
 		var ModelGrape = ModelItem.extend({
 			name: "Fruit"
 			,variantName: "Grape"
+			,description: "Grapes are grown in vinyards and can be exported as is, or turned into other commodities."
 			,url: ""
 			,typeid: "food"
 			,manufactureid: "vinyard"
@@ -1702,6 +1722,7 @@
 		var ModelPear = ModelItem.extend({
 			name: "Fruit"
 			,variantName: "Pear"
+			,description: "Pears are grown in orchards and can be exported as is, or turned into other commodities."
 			,url: ""
 			,typeid: "food"
 			,manufactureid: "orchard"
@@ -1722,6 +1743,7 @@
 		var ModelOlive = ModelItem.extend({
 			name: "Fruit"
 			,variantName: "Olive"
+			,description: "Olives are grown in groves and can be exported as is, or turned into other commodities."
 			,url: ""
 			,typeid: "food"
 			,manufactureid: "grove"
@@ -1743,6 +1765,7 @@
 		var ModelRawhide = ModelItem.extend({
 			name: "Rawhide"
 			,variantName: ""
+			,description: "Rawhide is harvested from cows and sheep on farms and can be exported as is, or turned into other commodities."
 			,url: ""
 			,typeid: "material"
 			,manufactureid: "farm"
@@ -1763,6 +1786,7 @@
 		var ModelLeather = ModelItem.extend({
 			name: "Leather"
 			,variantName: ""
+			,description: "Leather is created out of rawhide from farms in tanneries and can be exported as is or turned into other commodities."
 			,url: ""
 			,typeid: "material"
 			,manufactureid: "tannery"
@@ -1786,6 +1810,7 @@
 		var ModelIronOre = ModelItem.extend({
 			name: "Iron Ore"
 			,variantName: ""
+			,description: "Iron Ore is mined out of the ground in iron mines and can be smelted into Iron Ingots."
 			,url: ""
 			,typeid: "material"
 			,manufactureid: "mine"
@@ -1806,6 +1831,7 @@
 		var ModelIronIngot = ModelItem.extend({
 			name: "Iron Ingot"
 			,variantName: ""
+			,description: "Iron Ingots can be smelted out of Iron Ore in a Blacksmith and used to create other items."
 			,url: ""
 			,typeid: "material"
 			,manufactureid: "blacksmith"
@@ -1827,6 +1853,7 @@
 		var ModelIronSpear = ModelItem.extend({
 			name: "Iron Spear"
 			,variantName: ""
+			,description: "Iron Spears are cheap and easy to produce, arming the majority of armies throughout history. They have good defense against horse and infanty but are vulnerable to ranged attack."
 			,url: ""
 			,typeid: "weapon"
 			,manufactureid: "blacksmith"
@@ -1848,6 +1875,7 @@
 		var ModelIronSword = ModelItem.extend({
 			name: "Iron Sword"
 			,variantName: ""
+			,description: "Iron Swords are weapons of wealth and status, arming the elites and providing good offensive and defensive capabilities.  They are vulnerable to cavalry charge and like most infantry men, ranged attack."
 			,url: ""
 			,typeid: "weapon"
 			,manufactureid: "blacksmith"
@@ -1868,11 +1896,12 @@
 		});
 		var ModelIronHalberd = ModelItem.extend({
 			name: "Iron Halberd"
+			,description: "Iron Halberds are relatively cheap and easy to produce, frequently fielded by mercenaries and the moderately wealthy. An iron blade with a sturdy point attached to the end of a long wooden pole, they have good offensive and defensive capabilities against both cavalry and other infantry."
 			,variantName: ""
 			,url: ""
 			,typeid: "weapon"
 			,manufactureid: "blacksmith"
-			,consumption: ['Coal', 'Iron Ingot', 'Wood']
+			,consumption: ['Coal', 'Iron Ingot', 'Iron Ingot', 'Wood']
 			,max_price: 10
 			,min_price: 1
 			,qualityFactor: 1
@@ -1890,6 +1919,7 @@
 		var ModelIronHelm = ModelItem.extend({
 			name: "Iron Helm"
 			,variantName: ""
+			,description: "Iron Helms protect from a quick death by braining."			
 			,url: ""
 			,typeid: "armor"
 			,manufactureid: "blacksmith"
@@ -2016,6 +2046,58 @@
 			,techRequirement: ["Leatherworking"]
 		});
 
+// **** Populate Global Item List *************************
+
+itemlist = {
+	'Wheat': new ModelWheat({})
+	,'Flour': new ModelFlour({})
+	,'Rice': new ModelRice({})
+	,'Corn': new ModelCorn({})
+	,'Mutton': new ModelMutton({})
+	,'Beef': new ModelBeef({})
+	,'Apple': new ModelApple({})
+	,'Orange': new ModelOrange({})
+	,'Cherry': new ModelCherry({})
+	,'Grape': new ModelGrape({})
+	,'Pear': new ModelPear({})
+	,'Olive': new ModelOlive({})
+	,'Rawhide': new ModelRawhide({})
+	,'Leather': new ModelLeather({})
+	,'Iron Ore': new ModelIronOre({})
+	,'Iron Ingot': new ModelIronIngot({})
+	,'Iron Spear': new ModelIronSpear({})
+	,'Iron Sword': new ModelIronSword({})
+	,'Iron Halberd': new ModelIronHalberd({})
+	,'Iron Helm': new ModelIronHelm({})
+	,'Iron Mail': new ModelIronMail({})
+	,'Iron Platemail': new ModelIronPlatemail({})
+	,'Iron Shield': new ModelIronShield({})
+	,'Leather Shield': new ModelLeatherShield({})
+	,'Leather Sling': new ModelLeatherSling({})
+};
+function itemListCount()
+{
+	var c = 0;
+
+	for (var i in itemlist)
+	{
+		c++;
+	}	
+	
+	return c;
+}
+function itemListFood()
+{
+	var il = [];
+	for (var i in itemlist)
+	{
+		if (itemlist[i].food)
+		{
+			il.push(itemlist[i]);
+		}
+	}
+	return il;
+}
 
 // ******************************************************		
 		
@@ -2024,8 +2106,8 @@
 			,url: ""
 			,typeid: 0	// Plantation/Mine/etc. Basically, raw materials.
 			,buildCost: undefined
-			,produces: undefined
-			,consumes: undefined
+			,produces: []
+			,consumes: []
 			,citizens: []
 			,city: undefined
 			,initialize: function(args)
@@ -2056,6 +2138,44 @@
 				
 			}
 		});
+		var ModelBuilding = ModelBuilding.extend({
+			name: "Iron Mine"
+			,url: ""
+			,typeid: 0	// Plantation/Mine/etc. Basically, raw materials.
+			,buildCost: undefined
+			,produces: undefined
+			,consumes: ['']
+			,citizens: []
+			,city: undefined
+			,initialize: function(args)
+			{
+				if (args.name != undefined)
+				{
+					this.name = args.name;
+				}
+				if (args.buildCost != undefined)
+				{
+					this.buildCost = args.buildCost;
+				}
+				if (args.produces != undefined)
+				{
+					this.produces = args.produces;
+				}
+				if (args.consumes != undefined)
+				{
+					this.consumes = args.consumes;
+				}
+				if (args.city != undefined)
+				{
+					this.city = args.city;
+				}
+			}
+			,newTurn: function()
+			{
+				
+			}
+		});		
+		
 		var ModelSettlement = Backbone.Model.extend({
 			name: "Outpost"
 			,type: "Outpost"
