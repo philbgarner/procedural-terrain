@@ -929,6 +929,19 @@
 					}
 				}
 			}
+			,exploreRegion: function(playerID, voronoiID)
+			{
+				for (var k=0; k<this.mapwidth; k++)
+				{
+					for (var i=0; i<this.mapheight; i++)
+					{
+						if (voronoiID == this.get(i, k, 0).voronoi)
+						{
+							this.setDiscovered(i, k, playerID);
+						}
+					}
+				}
+			}
 			,obscureAll: function(playerID)
 			{
 				for (var k=0; k<this.mapwidth; k++)
@@ -1050,6 +1063,8 @@
 				x = parseInt(x); y = parseInt(y);
 				if (this.tiles[l] == undefined) { return false; }
 
+				var retval = [];
+
 				if (r > 0)
 				{
 					for (var j = y - r; j < y + r; j++)
@@ -1074,7 +1089,7 @@
 												|| objects[i].type == 'Outpost'
 												|| objects[i].type == 'Town')
 											{
-												return objects[0];
+												retval.push(objects[0]);
 											}
 										}
 									}
@@ -1086,6 +1101,10 @@
 								}
 							}
 						}
+					}
+					if (retval.length > 0)
+					{
+						return retval;
 					}
 				}
 				else
@@ -2565,9 +2584,22 @@ function itemListFood()
 										if (this.tset.tiledefs.contentJSON[tileid] != undefined)
 										{
 											var colr = this.tset.tiledefs.contentJSON[tileid].colour;
+											var west = this.mapdata.get(i - 1, k, l); var east = this.mapdata.get(i + 1, k, l);
+											var north = this.mapdata.get(i, k - 1, l); var south = this.mapdata.get(i, k + 1, l);
+											var v = tile.voronoi;//console.log(west, north, east, south);
 											ctx.fillStyle = colr;
 											ctx.fillRect(dx, dy, scalex, scaley);
-										}
+											if (
+												(west.voronoi != v || east.voronoi != v || north.voronoi != v || south.voronoi != v)
+												&& (west.tileid != 0 && north.tileid != 0 && east.tileid != 0 && south.tileid != 0)
+											)
+											{
+												ctx.globalAlpha = 0.6;
+												ctx.fillStyle = "#333";
+												ctx.fillRect(dx, dy, scalex, scaley);
+												ctx.globalAlpha = 1.0;
+											}
+										}										
 									}
 
 									// Draw Objects
@@ -2694,11 +2726,12 @@ function itemListFood()
 			}
 			,settle: function (x, y, settlement)
 			{
-				
 				var outpost = this.tset.getName("Outpost");
 				var outpostid = this.tset.getIndexByName("Outpost");
 				this.mapdata.set(x, y, outpostid, outpost.layer);
 				this.mapdata.addObject(x, y, settlement, outpost.layer);
+				var ownerID = settlement.ownerID;
+				this.mapdata.exploreRegion(ownerID, this.mapdata.get(x, y, 0).voronoi);
 			}
 			,addUnit: function (x, y, unit)
 			{

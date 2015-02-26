@@ -398,6 +398,8 @@
 			,top: 200
 			,width: 400
 			,height: 250
+			,x: 0
+			,y: 0
 			,initialize: function(arg)
 			{
 				if (arg.object != undefined)
@@ -410,14 +412,26 @@
 					me.updateText();
 				});
 			}			
-			,show: function()
+			,show: function(x, y)
 			{
+				this.x = x;
+				this.y = y;
 				this.updateText();
 				$(this.el).dialog({title: this.object.name, autoOpen: true, left: this.left, top: this.top
 						,width: 500, height: 400});
 			}
 			,updateText: function()
 			{
+				$(this.el).find("#productionCityList").empty();
+				var nearbyCities = map.mapdata.getCity(this.x, this.y);
+				for (var c = 0; c < nearbyCities.length; c++)
+				{
+					if (nearbyCities[c].ownerID == 0)
+					{
+						$(this.el).find("#productionCityList").append("<option>" + nearbyCities[c].name + "</option>");
+					}
+				}
+				console.log("nearbyCities", nearbyCities);
 				console.log("Objectview: ", this.object);			
 				$(this.el).find("#currentProduction").text(this.object.produces);
 //				$(this.el).find("#objectProduces").text(this.object.produces);
@@ -901,7 +915,7 @@
 					if (object != undefined && object != false)
 					{
 						objectView = new ObjectView({'object': object[0]});
-						objectView.show();
+						objectView.show(tilex, tiley);
 					}
 				}
 			});
