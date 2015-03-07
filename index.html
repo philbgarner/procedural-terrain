@@ -411,6 +411,10 @@
 					me.object.produces = $(me.el).find("#objectProduces option").filter(":selected").text();
 					me.updateText();
 				});
+				$(this.el).find("#changeProductionCity").click(function () {
+					me.object.city = $(me.el).find("#productionCityList option").filter(":selected").text();
+					me.updateText();
+				});
 			}			
 			,show: function(x, y)
 			{
@@ -423,6 +427,7 @@
 			,updateText: function()
 			{
 				$(this.el).find("#productionCityList").empty();
+				$(this.el).find("#productionCity").text(this.object.city);
 				var nearbyCities = map.mapdata.getCity(this.x, this.y);
 				for (var c = 0; c < nearbyCities.length; c++)
 				{
@@ -1029,7 +1034,7 @@
 					</select> <input type='button' id='changeProduction' value='Change'/> <span id='changecost'>(cost to change)</span>
 				</span>
 			<br/>
-			Send Production to: <span id='productionCity'></span>
+			Send Production to: <span id='productionCity'>Nowhere</span>
 			<br><span id='productionTarget'><select id='productionCityList'>
 				</select> <input type='button' id='changeProductionCity' value='Change'/>
 			</span>

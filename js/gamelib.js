@@ -20,6 +20,21 @@
 			return 100 * Math.pow(2, l - 2);
 		}
 
+		var regionColours = [
+			"#f00"
+			,"#00b"
+			,"#b400ff"
+			,"#ff0"
+			,"#00797a"
+			,"#7a000b"
+			,"#000e7a"
+			,"#5b007a"
+			,"#ff00df"
+			,"#000"
+			,"#ffc2e2"
+			,"#003332"
+		];
+
 		// *** Region NameGen Prototypes **********************************************************************
 
 		function latin()
@@ -269,6 +284,7 @@
 			,voronoi_max: 48
 			,voronoi_min: 32
 			,voronoi: []
+			,voronoi_colours: []
 			,max_height: 10
 			,min_height: 0
 			,sea_height: 3.3
@@ -354,6 +370,7 @@
 						, "name": name
 					};
 					this.voronoi.push(v);
+					this.voronoi_colours.push(chance.pick(regionColours));
 				}
 			}
 
@@ -374,6 +391,7 @@
 				chance = new Chance(this.seed);
 				this.clear();
 				this.voronoi = [];
+				this.voronoi_colours = [];
 				// Loop through each map point and calculate the closest voronoi neighbour, then
 				// sample the voronoi point's height and add a random tolerance +/- that point's
 				// value.
@@ -797,7 +815,7 @@
 				var discovered = this.tiles[l][y][x].discovered;
 				var moisture = this.tiles[l][y][x].moisture;
 				var h = this.tiles[l][y][x].height; 
-				var v = this.tiles[l][y][x].voronoi; 
+				var v = this.tiles[l][y][x].voronoi;
 				row.push({"tileid": i, "units": units, "voronoi": v, "height": h, "objects": objects, "discovered": discovered, "moisture": moisture});
 				row.push.apply(row, this.tiles[l][y].slice(x + 1));
 				this.tiles[l][y] = row;
@@ -2272,6 +2290,44 @@ function itemListFood()
 				}
 			}
 		});
+		
+		var ModelPathfindingNode = Backbone.Model.extend({
+			name: 'Pathfinding Node'
+			,start: false
+			,finish: false
+			,x: undefined
+			,y: undefined
+			,traversed: false
+			,initialize: function (arg)
+			{
+				if (arg.traversed != undefined)
+				{
+					this.traversed = arg.traversed;
+				}
+				if (arg.x != undefined)
+				{
+					this.x = arg.x;
+				}
+				if (arg.y != undefined)
+				{
+					this.y = arg.y;
+				}
+				if (arg.start != undefined)
+				{
+					this.start = arg.start;
+				}
+				if (arg.finish != undefined)
+				{
+					this.finish = arg.finish;
+				}
+			}
+		});
+		var ModelPathfinding = Backbone.Model.extend({
+			name: 'Pathfinding'
+			,mapdata: undefined
+			,isObstacle: function (x, y) {}
+			,getCost: function (x, y) {}
+		});
 
 		var Map = Backbone.View.extend({
 			el: "contents"
@@ -2477,8 +2533,49 @@ function itemListFood()
 								{
 									this.tset.drawTile("unexplored", dx, dy);
 								}
-							}
+								if (l == this.mapdata.maplayers - 1 && this.mapdata.get(i, k, l).discovered[0] == true)
+								{
+									var borderWidth = 2;
+									var scalex = 32; var scaley = 32;
+									var west = this.mapdata.get(i - 1, k, 0); var east = this.mapdata.get(i + 1, k, 0);
+									var north = this.mapdata.get(i, k - 1, 0); var south = this.mapdata.get(i, k + 1, 0);
+									var v = this.mapdata.get(i, k, 0).voronoi;
+									ctx.globalAlpha = 0.6;
+									ctx.strokeStyle = map.mapdata.voronoi_colours[v];
+									ctx.strokeWidth = borderWidth;
+									if (
+										west.voronoi != v
+										&& west.voronoi != undefined
+									)
+									{
+										ctx.strokeRect(dx, dy, 1, scaley);
+									}
+									if (
+										east.voronoi != v
+										&& east.voronoi != undefined
+									)
+									{
+										ctx.strokeRect(dx + scalex - borderWidth, dy, 1, scaley);
+									}
+									if (
+										south.voronoi != v
+										&& south.voronoi != undefined
+									)
+									{
+										ctx.strokeRect(dx, dy + scaley - borderWidth, scalex, 1);
+									}
+									if (
+										north.voronoi != v
+										&& north.voronoi != undefined
+									)
+									{
+										ctx.strokeRect(dx, dy, scalex - borderWidth, borderWidth);
+									}
+									ctx.globalAlpha = 1.0;
+								}
 							
+							}
+
 							dx += this.tset.tileWidth();
 						}
 						dy += this.tset.tileHeight();
@@ -2586,18 +2683,26 @@ function itemListFood()
 											var colr = this.tset.tiledefs.contentJSON[tileid].colour;
 											var west = this.mapdata.get(i - 1, k, l); var east = this.mapdata.get(i + 1, k, l);
 											var north = this.mapdata.get(i, k - 1, l); var south = this.mapdata.get(i, k + 1, l);
-											var v = tile.voronoi;//console.log(west, north, east, south);
-											ctx.fillStyle = colr;
-											ctx.fillRect(dx, dy, scalex, scaley);
-											if (
-												(west.voronoi != v || east.voronoi != v || north.voronoi != v || south.voronoi != v)
-												&& (west.tileid != 0 && north.tileid != 0 && east.tileid != 0 && south.tileid != 0)
+											var v = tile.voronoi;
+											if (west.voronoi != undefined
+												&& east.voronoi != undefined
+												&& north.voronoi != undefined
+												&& south.voronoi != undefined
 											)
 											{
-												ctx.globalAlpha = 0.6;
-												ctx.fillStyle = "#333";
+												ctx.fillStyle = colr;
 												ctx.fillRect(dx, dy, scalex, scaley);
-												ctx.globalAlpha = 1.0;
+												if (
+													(west.voronoi != v || east.voronoi != v || north.voronoi != v || south.voronoi != v)
+													&& (west.tileid != 0 && north.tileid != 0 && east.tileid != 0 && south.tileid != 0)
+												)
+												{
+													ctx.globalAlpha = 0.6;
+													ctx.fillStyle = map.mapdata.voronoi_colours[v];
+													ctx.fillRect(dx, dy, scalex, scaley);
+													ctx.globalAlpha = 1.0;
+	//												console.log(">>", west.voronoi, north.voronoi, east.voronoi, south.voronoi);
+												}
 											}
 										}										
 									}
