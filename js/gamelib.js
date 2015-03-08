@@ -2172,46 +2172,13 @@ function itemListFood()
 			}
 			,newTurn: function()
 			{
-				
+				if (this.city != undefined)
+				{
+					console.log("TODO: Create a new item of the specified type and then add it to the production target city.");
+				}
 			}
 		});
-		var ModelBuilding = ModelBuilding.extend({
-			name: "Iron Mine"
-			,url: ""
-			,typeid: 0	// Plantation/Mine/etc. Basically, raw materials.
-			,buildCost: undefined
-			,produces: undefined
-			,consumes: ['']
-			,citizens: []
-			,city: undefined
-			,initialize: function(args)
-			{
-				if (args.name != undefined)
-				{
-					this.name = args.name;
-				}
-				if (args.buildCost != undefined)
-				{
-					this.buildCost = args.buildCost;
-				}
-				if (args.produces != undefined)
-				{
-					this.produces = args.produces;
-				}
-				if (args.consumes != undefined)
-				{
-					this.consumes = args.consumes;
-				}
-				if (args.city != undefined)
-				{
-					this.city = args.city;
-				}
-			}
-			,newTurn: function()
-			{
-				
-			}
-		});		
+		
 		
 		var ModelSettlement = Backbone.Model.extend({
 			name: "Outpost"
@@ -2819,6 +2786,12 @@ function itemListFood()
 							{
 								tile.units[u].newTurn();
 							}
+						}
+						
+						var obj = this.mapdata.getObjects(i, k);
+						if (obj.length > 0)
+						{
+							obj[0].newTurn();
 						}
 						
 						var city = this.mapdata.getCity(i, k, 0);

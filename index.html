@@ -412,7 +412,16 @@
 					me.updateText();
 				});
 				$(this.el).find("#changeProductionCity").click(function () {
-					me.object.city = $(me.el).find("#productionCityList option").filter(":selected").text();
+					var city = $(me.el).find("#productionCityList option").filter(":selected").text();
+					var cities = map.mapdata.getCity(me.x, me.y, 3); 
+					for (var i = 0; i < cities.length; i++)
+					{console.log(">>>>", cities[i]);
+						if (cities[i].name == city)
+						{
+							me.object.city = cities[i];
+							break;
+						}
+					}
 					me.updateText();
 				});
 			}			
@@ -427,8 +436,14 @@
 			,updateText: function()
 			{
 				$(this.el).find("#productionCityList").empty();
-				$(this.el).find("#productionCity").text(this.object.city);
-				var nearbyCities = map.mapdata.getCity(this.x, this.y);
+				var cname = "Nowhere";
+				if (this.object.city != undefined
+					&& this.object.city.name != undefined)
+				{
+					cname = this.object.city.name;
+				}
+				$(this.el).find("#productionCity").text(cname);
+				var nearbyCities = map.mapdata.getCity(this.x, this.y, 3);
 				for (var c = 0; c < nearbyCities.length; c++)
 				{
 					if (nearbyCities[c].ownerID == 0)
