@@ -2502,41 +2502,43 @@ function itemListFood()
 								}
 								if (l == this.mapdata.maplayers - 1 && this.mapdata.get(i, k, l).discovered[0] == true)
 								{
-									var borderWidth = 2;
+//									var borderWidth = 6;
 									var scalex = 32; var scaley = 32;
 									var west = this.mapdata.get(i - 1, k, 0); var east = this.mapdata.get(i + 1, k, 0);
 									var north = this.mapdata.get(i, k - 1, 0); var south = this.mapdata.get(i, k + 1, 0);
 									var v = this.mapdata.get(i, k, 0).voronoi;
-									ctx.globalAlpha = 0.6;
-									ctx.strokeStyle = map.mapdata.voronoi_colours[v];
-									ctx.strokeWidth = borderWidth;
-									if (
-										west.voronoi != v
-										&& west.voronoi != undefined
-									)
+									ctx.globalAlpha = 0.1;
+									for (var borderWidth = 1; borderWidth < 6; borderWidth++)
 									{
-										ctx.strokeRect(dx, dy, 1, scaley);
-									}
-									if (
-										east.voronoi != v
-										&& east.voronoi != undefined
-									)
-									{
-										ctx.strokeRect(dx + scalex - borderWidth, dy, 1, scaley);
-									}
-									if (
-										south.voronoi != v
-										&& south.voronoi != undefined
-									)
-									{
-										ctx.strokeRect(dx, dy + scaley - borderWidth, scalex, 1);
-									}
-									if (
-										north.voronoi != v
-										&& north.voronoi != undefined
-									)
-									{
-										ctx.strokeRect(dx, dy, scalex - borderWidth, borderWidth);
+										ctx.fillStyle = map.mapdata.voronoi_colours[v];
+										if (
+											west.voronoi != v
+											&& west.voronoi != undefined
+										)
+										{
+											ctx.fillRect(dx, dy, borderWidth, scaley);
+										}
+										if (
+											east.voronoi != v
+											&& east.voronoi != undefined
+										)
+										{
+											ctx.fillRect(dx + scalex - borderWidth, dy, borderWidth, scaley);
+										}
+										if (
+											south.voronoi != v
+											&& south.voronoi != undefined
+										)
+										{
+											ctx.fillRect(dx, dy + scaley - borderWidth, scalex, borderWidth);
+										}
+										if (
+											north.voronoi != v
+											&& north.voronoi != undefined
+										)
+										{
+											ctx.fillRect(dx, dy, scalex, borderWidth);
+										}
 									}
 									ctx.globalAlpha = 1.0;
 								}
