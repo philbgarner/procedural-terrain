@@ -379,6 +379,12 @@
 				{
 					$(this.el).find("#cityCitizens").append("<li>" + this.city.citizens[i].name + " (" + this.city.citizens[i].type + ")</li>");
 				}
+				
+				$(this.el).find("#cityInventory").empty();
+				for (var i in this.city.inventory.items)
+				{
+					$(this.el).find("#cityInventory").append("<li>" + this.city.inventory.items[i].name + " x" + this.city.inventory.items[i].qty + "</li>");
+				}
 			}
 			,render: function()
 			{
@@ -1021,6 +1027,13 @@
 		<p>
 			Citizens:
 			<ul id='cityCitizens'>
+				
+			</ul>
+		</p>
+
+		<p>
+			Inventory:
+			<ul id='cityInventory'>
 				
 			</ul>
 		</p>

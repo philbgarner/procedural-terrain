@@ -1530,7 +1530,6 @@
 
 		var ModelItem = Backbone.Model.extend({
 			name: ""
-			,variantName: ""
 			,description: ""
 			,url: ""
 			,typeid: "food"
@@ -1562,8 +1561,7 @@
 		});
 
 		var ModelWheat = ModelItem.extend({
-			name: "Grain"
-			,variantName: "Wheat"
+			name: "Wheat"
 			,description: "Wheat is produced in farms, and can be exported and ground in mills into flour." 
 			,url: ""
 			,typeid: "food"
@@ -1583,14 +1581,12 @@
 		});
 		var ModelFlour = ModelWheat.extend({
 			name: "Flour"
-			,variantName: "Wheat"
-			,description: "Wheat flour is ground in mills from wheat harvested on farms or sold on the market."
+			,description: "Flour is ground in mills from grains harvested on farms or traded for on the market."
 			,manufactureid: "mill"
 		});
 		
 		var ModelRice = ModelItem.extend({
-			name: "Grain"
-			,variantName: "Rice"
+			name: "Rice"
 			,description: "Rice is grown in farms and can be exported as is, or turned into other commodities."
 			,url: ""
 			,typeid: "food"
@@ -1610,8 +1606,7 @@
 		});
 
 		var ModelCorn = ModelItem.extend({
-			name: "Grain"
-			,variantName: "Corn"
+			name: "Corn"
 			,description: "Corn is grown on farms and can be exported as is, or turned into other commodities."
 			,url: ""
 			,typeid: "food"
@@ -1631,8 +1626,7 @@
 		});
 
 		var ModelMutton = ModelItem.extend({
-			name: "Meat"
-			,variantName: "Mutton"
+			name: "Mutton"
 			,description: "Mutton is harvested from sheep grown on farms and can be exported as is, or sold on the market."
 			,url: ""
 			,typeid: "food"
@@ -1652,8 +1646,7 @@
 		});
 				
 		var ModelBeef = ModelItem.extend({
-			name: "Meat"
-			,variantName: "Beef"
+			name: "Beef"
 			,description: "Beef is harvested from cows grown on farms and can be exported as is, or sold on the market."
 			,url: ""
 			,typeid: "food"
@@ -1673,8 +1666,7 @@
 		});
 		
 		var ModelApple = ModelItem.extend({
-			name: "Fruit"
-			,variantName: "Apple"
+			name: "Apple"
 			,description: "Apples are grown in orchards and can be exported as is, or turned into other commodities."
 			,url: ""
 			,typeid: "food"
@@ -1715,8 +1707,7 @@
 		});
 				
 		var ModelCherry = ModelItem.extend({
-			name: "Fruit"
-			,variantName: "Cherry"
+			name: "Cherry"
 			,description: "Cherries are grown in orchards and can be exported as is, or turned into other commodities."
 			,url: ""
 			,typeid: "food"
@@ -2112,6 +2103,88 @@ itemlist = {
 	,'Leather Shield': new ModelLeatherShield({})
 	,'Leather Sling': new ModelLeatherSling({})
 };
+function itemFactory(itemname)
+{
+	switch(itemname)
+	{
+		case 'Wheat':
+			return new ModelWheat({});
+		break;
+		case 'Flour': 
+			return new ModelFlour({});
+		break;
+		case 'Rice': console.log(new ModelRice({}));
+			return new ModelRice({});
+		break;
+		case 'Corn': 
+			return new ModelCorn({});
+		break;
+		case 'Mutton': 
+			return new ModelMutton({});
+		break;
+		case 'Beef': 
+			return new ModelBeef({});
+		break;
+		case 'Apple': 
+			return new ModelApple({});
+		break;
+		case 'Orange': 
+			return new ModelOrange({});
+		break;
+		case 'Cherry': 
+			return new ModelCherry({});
+		break;
+		case 'Grape': 
+			return new ModelGrape({});
+		break;
+		case 'Pear': 
+			return new ModelPear({});
+		break;
+		case 'Olive': 
+			return new ModelOlive({});
+		break;
+		case 'Rawhide': 
+			return new ModelRawhide({});
+		break;
+		case 'Leather': 
+			return new ModelLeather({});
+		break;
+		case 'Iron Ore': 
+			return new ModelIronOre({});
+		break;
+		case 'Iron Ingot': 
+			return new ModelIronIngot({});
+		break;
+		case 'Iron Spear': 
+			return new ModelIronSpear({});
+		break;
+		case 'Iron Sword': 
+			return new ModelIronSword({});
+		break;
+		case 'Iron Halberd':
+			return new ModelIronHalberd({});
+		break;
+		case 'Iron Helm':
+			return new ModelIronHelm({});
+		break;
+		case 'Iron Mail':
+			return new ModelIronMail({});
+		break;
+		case 'Iron Platemail':
+			return new ModelIronPlatemail({});
+		break;
+		case 'Iron Shield':
+			return new ModelIronShield({});
+		break;
+		case 'Leather Shield':
+			return new ModelLeatherShield({});
+		break;
+		case 'Leather Sling': 
+			return new ModelLeatherSling({});	
+		break;
+	};
+}
+
 function itemListCount()
 {
 	var c = 0;
@@ -2143,7 +2216,7 @@ function itemListFood()
 			,url: ""
 			,typeid: 0	// Plantation/Mine/etc. Basically, raw materials.
 			,buildCost: undefined
-			,produces: []
+			,produces: undefined
 			,consumes: []
 			,citizens: []
 			,city: undefined
@@ -2174,8 +2247,37 @@ function itemListFood()
 			{
 				if (this.city != undefined)
 				{
-					console.log("TODO: Create a new item of the specified type and then add it to the production target city.");
+					if (this.produces != undefined)
+					{
+						this.city.inventory.addItem(this.produces);
+						console.log("Building " + this.name + " sending 1 " + this.produces + " to " + this.city.name);
+					}
 				}
+			}
+		});
+		
+		
+		var ModelInventory = Backbone.Model.extend({
+			name: 'Inventory'
+			,items: {}
+			,count: function()
+			{
+				return items.length;
+			}
+			,addItem: function(itemname)
+			{
+				for (i in this.items)
+				{
+					if (i == itemname)
+					{
+						this.items[i].qty++;
+						return true;
+					}
+				}
+				// If the item wasn't found, add a new instance of that item to the stack.
+				var newitem = itemFactory(itemname);
+				console.log("Creating", newitem);
+				this.items[itemname] = newitem;
 			}
 		});
 		
@@ -2185,7 +2287,7 @@ function itemListFood()
 			,type: "Outpost"
 			,url: ""
 			,citizens: []
-			,inventory: []
+			,inventory: new ModelInventory({name: 'Outpost Inventory'})
 			,x: 0
 			,y: 0
 			,buildings: []
