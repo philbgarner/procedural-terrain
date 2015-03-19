@@ -363,7 +363,7 @@
 			{
 				this.updateText();
 				$(this.el).dialog({title: this.city.name, autoOpen: true, left: this.left, top: this.top
-						,width: 500, height: 400});
+						,width: 500, height: 500});
 			}
 			,updateText: function()
 			{
@@ -372,6 +372,14 @@
 				$(this.el).find("#cityType").text(this.city.type);
 
 				$(this.el).find("#cityFoodAmt").text(this.city.food);
+				
+				if (this.city != undefined)
+				{
+					if (this.city.production != undefined)
+					{
+						$(this.el).find	("#cityProduction").text(this.city.production.name);
+					}
+				}
 
 				$(this.el).find("#cityOwner").text(this.city.ownerID);
 				$(this.el).find("#cityCitizens").empty();
@@ -431,8 +439,12 @@
 					me.updateText();
 				});
 			}			
-			,show: function(x, y)
+			,show: function(x, y, arg)
 			{
+				if (arg.object != undefined)
+				{
+					this.object = arg.object;
+				}
 				this.x = x;
 				this.y = y;
 				this.updateText();
@@ -941,7 +953,7 @@
 					if (object != undefined && object != false)
 					{
 						objectView = new ObjectView({'object': object[0]});
-						objectView.show(tilex, tiley);
+						objectView.show(tilex, tiley, object);
 					}
 				}
 			});
@@ -1014,6 +1026,9 @@
 
 	<p>
 		<h2 id='cityNameHeader'>City Name</h2>
+		<p>
+			Production: <span id='cityProduction'></span>
+		</p>
 		<p>
 			Owner: <span id='cityOwner'></span>
 		</p>

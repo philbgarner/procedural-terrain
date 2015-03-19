@@ -1557,6 +1557,10 @@
 				{
 					this.description = args.description;
 				}
+				if (args.qty != undefined)
+				{
+					this.qty = args.qty;
+				}
 			}
 		});
 
@@ -1579,10 +1583,26 @@
 			,qty: 1
 			,techRequirement: ["Farming"]
 		});
-		var ModelFlour = ModelWheat.extend({
-			name: "Flour"
-			,description: "Flour is ground in mills from grains harvested on farms or traded for on the market."
-			,manufactureid: "mill"
+		
+		var ModelBeer = ModelItem.extend({
+			name: "Beer"
+			,variantName: ""
+			,description: "Beer is produced at a brewers from wheat and satisfies the lower and middle classes."
+			,url: ""
+			,typeid: "food"
+			,manufactureid: "brewery"
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: true
+			,weapon: false
+			,armor: false
+			,helm: false
+			,shield: false
+			,arrow: false
+			,qty: 1
+			,techRequirement: ["Brewery"]
 		});
 		
 		var ModelRice = ModelItem.extend({
@@ -1789,7 +1809,6 @@
 			,techRequirement: ["Orchards"]
 		});
 		
-		
 		var ModelRawhide = ModelItem.extend({
 			name: "Rawhide"
 			,variantName: ""
@@ -1811,6 +1830,29 @@
 			,qty: 1
 			,techRequirement: ["Pastoralism"]
 		});
+		
+		var ModelWood = ModelItem.extend({
+			name: "Wood"
+			,variantName: ""
+			,description: "Wood is harvested from a logging camp built on a patch of trees."
+			,url: ""
+			,typeid: "material"
+			,manufactureid: "logging camp"
+			,max_price: 10
+			,min_price: 1
+			,qualityFactor: 1
+			,luxury: false
+			,food: false
+			,material: true
+			,weapon: false
+			,armor: false
+			,helm: false
+			,shield: false
+			,arrow: false
+			,qty: 1
+			,techRequirement: []
+		});
+		
 		var ModelLeather = ModelItem.extend({
 			name: "Leather"
 			,variantName: ""
@@ -2078,7 +2120,6 @@
 
 itemlist = {
 	'Wheat': new ModelWheat({})
-	,'Flour': new ModelFlour({})
 	,'Rice': new ModelRice({})
 	,'Corn': new ModelCorn({})
 	,'Mutton': new ModelMutton({})
@@ -2185,6 +2226,52 @@ function itemFactory(itemname)
 	};
 }
 
+// **** Populate Global Item List *************************
+
+var ModelRecipe = Backbone.Model.extend({
+	name: ""
+	,description: ""
+	,url: ""
+	,typeid: ""
+	,consumes: []
+	,produces: []
+	,make: function(inventory)
+	{
+		// Take the consumes[] items from the inventory parameter
+		// and place the produces[] items into the inventory if
+		// there are enough.
+		
+		// TODO
+		return false;
+	}
+});
+
+var ModelRecipeBeer = ModelRecipe.extend({
+	name: "Beer"
+	,description: "1 Beer can brewed out of 2 wheat, counts as a luxury for lower and middle class citizens." 
+	,consumes: [new ModelWheat({qty: 2})]
+	,produces: [new ModelBeer({})]
+});
+
+var ModelRecipeIronSpear = ModelRecipe.extend({
+	name: "Iron Spear"
+	,description: "1 iron ingot fashioned into a spear point, fixed on the end of 2 wood."
+	,consumes: [new ModelIronIngot({})]
+	,produces: [new ModelWood({qty: 2})]
+});
+
+var ModelRecipeWoodenSpear = ModelRecipe.extend({
+	name: "Wooden Spear"
+	,description: ""
+	,consumes: [new ModelWood({qty: 2})]
+});
+
+recipebook = {
+	"Beer": new ModelRecipeBeer({})
+	,"Wooden Spear": new ModelRecipeWoodenSpear({})
+	,"Iron Spear": new ModelRecipeIronSpear({})
+}
+
 function itemListCount()
 {
 	var c = 0;
@@ -2287,6 +2374,7 @@ function itemListFood()
 			,type: "Outpost"
 			,url: ""
 			,citizens: []
+			,production: undefined
 			,inventory: new ModelInventory({name: 'Outpost Inventory'})
 			,x: 0
 			,y: 0
