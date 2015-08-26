@@ -14,6 +14,10 @@
 		margin: 0px;
 		padding: 0px;
 	}
+	span.playerNation
+	{
+		cursor: pointer;
+	}
 
 </style>
 	<link href="js/jqueryui/jquery-ui.css" rel="stylesheet">
@@ -36,7 +40,7 @@
 		
 		var unitRef = [];
 		
-		var playersMax = 10;
+		var playersMax = 1;
 		var playerCurrent = 0;
 		
 		var unitView;
@@ -48,10 +52,478 @@
 		var map;
 		var unitdefs;
 		var key = [];
+		var MapGenerator;
 		
 		var TILE_UNEXPLORED = 11;
 		
 		var itemlist;
+		
+		function nationFactory(name)
+		{
+			switch(name)
+			{
+				case 'England':
+					return new NationEngland({});
+					break;
+				case 'Anonymous Tribe':
+					return new NationTribe({});
+					break;
+			}
+			return false;
+		}
+		function buildingFactory(name, city)
+		{
+			switch(name)
+			{
+				case 'Factory':
+					return new ModelFactory({"city": city});
+					break;
+				case 'Wealth':
+					return new ModelWealth({"city": city});
+					break;
+				case 'Citizens':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 10});
+					break;
+				case 'Engineers':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 25});
+					break;
+				case 'Riflemen':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 100});
+					break;
+				case 'Mechanized Infantry':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 15000});
+					break;
+				case 'Tank':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 70000});
+					break;
+				case 'Artillery':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 25000});
+					break;
+				case 'Archer':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 15});
+					break;
+				case 'Spearman':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 15});
+					break;
+				case 'Spy':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 50});
+					break;
+				case 'Diplomat':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 50});
+					break;
+				case 'Gunmen':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 35});
+					break;
+				case 'Marines':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 100});
+					break;
+				case 'Cargo Truck':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 50});
+					break;
+				case 'Supply Caravan':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 25});
+					break;
+				case 'Guerillas':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 40});
+					break;
+				case 'Alpine Riflemen':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 50});
+					break;
+				case 'Labourers':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 25});
+					break;
+				case 'Battleship':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 500000});
+					break;
+				case 'Corvette':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 200000});
+					break;
+				case 'Destroyer':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 500000});
+					break;
+				case 'Carrier':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 3000000});
+					break;
+				case 'Cargo Vessel':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 100000});
+					break;
+				case 'Submarine':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 250000});
+					break;
+				case 'Bomber':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 200000});
+					break;
+				case 'Fighter':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 125000});
+					break;
+				case 'Fighter Jet':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 500000});
+					break;
+				case 'Bomber Jet':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 600000});
+					break;
+				case 'Stealth Jet':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 750000});
+					break;
+				case 'Helicopter':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 300000});
+					break;
+				case 'Missile':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 600000});
+					break;
+			}
+			return false;
+		}
+		function unitFactory(map, x, y, typeID, ownerID, citizen)
+		{	
+			if (ownerID == undefined) { ownerID = currentPlayer; }
+			var typedef = {};
+			switch(typeID)
+			{
+				case "Citizen":
+					typedef = new ModelUnitCitizen({
+							"ownerID": ownerID
+						});
+					break;
+				case "Engineer":
+					typedef = new ModelUnitEngineer({
+							"ownerID": ownerID
+						});
+					break;
+				case "Riflemen":
+					typedef = new ModelUnitRiflemen({
+							"ownerID": ownerID
+						});
+					break;
+				case "Mechanized Infantry":
+					typedef = new ModelUnitMechanizedInfantry({
+							"ownerID": ownerID
+						});
+					break;
+				case "Tank":
+					typedef = new ModelUnitTank({
+							"ownerID": ownerID
+						});
+					break;
+				case "Artillery":
+					typedef = new ModelUnitArtillery({
+							"ownerID": ownerID
+						});
+					break;
+			}
+			if (citizen == undefined)
+			{
+				var voro = map.mapdata.get(x, y, 0).voronoi;
+				var bp = map.mapdata.voronoi[voro].name;
+				citizen = new ModelCitizen({birthplace: bp, name: bp, type: typeID});
+			}
+			if (typedef.newTurn == undefined)
+			{
+				return false;
+			}
+			typedef.x = x;
+			typedef.y = y;
+			typedef.citizen = citizen;
+			typedef.newTurn();
+			typedef = jQuery.extend(true, {}, typedef);
+			map.addUnit(x, y, typedef);
+			map.mapdata.exploreTile(x, y, typedef);
+			return typedef;
+		}
+
+		
+		var unitTypes = [
+				{ "name": "Aircraft", "consumes": ["aluminium", "oil", "arms"], "description": "Aircraft made out of aluminum, travelling at hundreds of kilometers per hour and loaded with dangerous armament will terrify your enemies." }
+				,{ "name": "Infantry", "consumes": ["supplies", "arms"], "description": "" }
+				,{ "name": "Mobile Infantry", "consumes": ["supplies", "arms", "oil", "steel", "rubber"], "description": "" }
+				,{ "name": "Ship", "consumes": ["supplies", "arms", "oil", "steel"], "description": "" }
+				,{ "name": "Tank", "consumes": ["supplies", "arms", "oil", "steel", "rubber"], "description": "" }
+				,{ "name": "Missile", "consumes": ["aluminum", "oil", "steel"], "description": "" }
+			];
+		var unitModels = [
+				{ "name": "Fighter", "type": "Aircraft", "cost": 10, "consumption": [
+						{"type": "aluminium", "qty": 1 }
+						,{"type": "oil", "qty": 1 }
+						,{"type": "arms", "qty": 2 }
+					]
+					,"airAttack": 3
+					,"airDefense": 1		
+					,"groundAttack": 1
+					,"groundDefense": 0
+					,"speed": 8
+					,"loiter": 2
+					,"amphibian": false
+					,"engineering": false
+					,"airborne": false
+					,"seafaring": false
+					,"submarine": false
+					,"airCarry": 0
+					,"landCarry": 0
+				 }
+				,{ "name": "Bomber", "type": "Aircraft", "cost": 15, "consumption": [
+						{"type": "aluminium", "qty": 2 }
+						,{"type": "oil", "qty": 2 }
+						,{"type": "arms", "qty": 4 }
+					]
+					,"airAttack": 0
+					,"airDefense": 0
+					,"groundAttack": 2
+					,"groundDefense": 0
+					,"speed": 5
+					,"loiter": 4
+					,"amphibian": false
+					,"airborne": false
+					,"engineering": false
+					,"seafaring": false
+					,"submarine": false
+					,"airCarry": 0
+					,"landCarry": 0
+				}
+
+				,{ "name": "Marines", "type": "Infantry", "cost": 5, "consumption": [
+						{"type": "supplies", "qty": 1 }
+						,{"type": "arms", "qty": 1 }
+					]
+					,"airAttack": 0
+					,"airDefense": 0
+					,"groundAttack": 1
+					,"groundDefense": 2
+					,"speed": 1
+					,"loiter": 0
+					,"amphibian": true
+					,"airborne": false
+					,"engineering": false
+					,"seafaring": false
+					,"submarine": false
+					,"airCarry": 0
+					,"landCarry": 0
+				}
+				,{ "name": "Riflemen", "type": "Infantry", "cost": 5, "consumption": [
+						{"type": "supplies", "qty": 1 }
+						,{"type": "arms", "qty": 1 }
+					]
+					,"airAttack": 0
+					,"airDefense": 0
+					,"groundAttack": 1
+					,"groundDefense": 2
+					,"speed": 1
+					,"loiter": 0
+					,"amphibian": false
+					,"airborne": false
+					,"engineering": false
+					,"seafaring": false
+					,"submarine": false
+					,"airCarry": 0
+					,"landCarry": 0
+				}
+				,{ "name": "Mobile Infantry", "type": "Mobile Infantry", "cost": 8, "consumption": [
+						{"type": "supplies", "qty": 2 }
+						,{"type": "arms", "qty": 2 }
+					]
+					,"airAttack": 0
+					,"airDefense": 0
+					,"groundAttack": 1
+					,"groundDefense": 1
+					,"speed": 3
+					,"loiter": 4
+					,"amphibian": false
+					,"airborne": false
+					,"engineering": false
+					,"seafaring": false
+					,"submarine": false
+					,"airCarry": 0
+					,"landCarry": 2
+				}
+				,{ "name": "Mobile Infantry", "type": "Mobile Infantry", "cost": 8, "consumption": [
+						{"type": "supplies", "qty": 2 }
+						,{"type": "arms", "qty": 2 }
+					]
+					,"airAttack": 0
+					,"airDefense": 0
+					,"groundAttack": 1
+					,"groundDefense": 1
+					,"speed": 3
+					,"loiter": 4
+					,"amphibian": false
+					,"airborne": false
+					,"engineering": false
+					,"seafaring": false
+					,"submarine": false
+					,"airCarry": 0
+					,"landCarry": 2
+				}
+				,{ "name": "Light Tank", "type": "Tank", "cost": 10, "consumption": [
+						{"type": "supplies", "qty": 5 }
+						,	{"type": "steel", "qty": 3 }
+						,{"type": "arms", "qty": 5 }
+					]
+					,"airAttack": 0
+					,"airDefense": 0
+					,"groundAttack": 4
+					,"groundDefense": 2
+					,"speed": 3
+					,"loiter": 4
+					,"amphibian": false
+					,"airborne": false
+					,"engineering": false
+					,"seafaring": false
+					,"submarine": false
+					,"airCarry": 0
+					,"landCarry": 0
+				}
+				,{ "name": "Paratrooper", "type": "Infantry", "cost": 7, "consumption": [
+						{"type": "supplies", "qty": 1 }
+						,{"type": "arms", "qty": 1 }
+					]
+					,"airAttack": 0
+					,"airDefense": 0
+					,"groundAttack": 1
+					,"groundDefense": 1
+					,"speed": 2
+					,"loiter": 0
+					,"amphibian": false
+					,"airborne": true
+					,"engineering": false
+					,"seafaring": false
+					,"submarine": false
+					,"airCarry": 0
+					,"landCarry": 0
+				}
+				,{ "name": "Engineer", "type": "Infantry", "cost": 7, "consumption": [
+						{"type": "supplies", "qty": 1 }
+						,{"type": "arms", "qty": 1 }
+					]
+					,"airAttack": 0
+					,"airDefense": 0
+					,"groundAttack": 1
+					,"groundDefense": 1
+					,"speed": 1
+					,"loiter": 0
+					,"amphibian": false
+					,"airborne": false
+					,"engineering": true
+					,"seafaring": false
+					,"submarine": false
+					,"airCarry": 0
+					,"landCarry": 0
+				}
+
+				,{ "name": "Submarine", "type": "Ship", "cost": 15, "consumption": [
+						{"type": "supplies", "qty": 5 }
+						,{"type": "oil", "qty": 3 }
+						,{"type": "steel", "qty": 3 }
+						,{"type": "arms", "qty": 2 }
+					]
+					,"airAttack": 0
+					,"airDefense": 0
+					,"groundAttack": 0
+					,"groundDefense": 0
+					,"seaAttack": 1
+					,"seaDefense": 1
+					,"subseaAttack": 1
+					,"speed": 2
+					,"loiter": 6
+					,"amphibian": false
+					,"airborne": false
+					,"engineering": false
+					,"seafaring": true
+					,"submarine": true
+					,"airCarry": 0
+					,"landCarry": 0
+				}
+				,{ "name": "Destroyer", "type": "Ship", "cost": 20, "consumption": [
+						{"type": "supplies", "qty": 5 }
+						,{"type": "oil", "qty": 3 }
+						,{"type": "steel", "qty": 3 }
+						,{"type": "arms", "qty": 2 }
+					]
+					,"airAttack": 0
+					,"airDefense": 0
+					,"groundAttack": 1
+					,"groundDefense": 0
+					,"seaAttack": 1
+					,"seaDefense": 1
+					,"subseaAttack": 1
+					,"speed": 2
+					,"loiter": 10
+					,"amphibian": false
+					,"airborne": false
+					,"engineering": false
+					,"seafaring": true
+					,"submarine": false
+					,"airCarry": 0
+					,"landCarry": 0
+				}
+				,{ "name": "Cruiser", "type": "Ship", "cost": 25, "consumption": [
+						{"type": "supplies", "qty": 5 }
+						,{"type": "oil", "qty": 4 }
+						,{"type": "steel", "qty": 4 }
+						,{"type": "arms", "qty": 4 }
+					]
+					,"airAttack": 0
+					,"airDefense": 0
+					,"groundAttack": 2
+					,"groundDefense": 0
+					,"seaAttack": 2
+					,"seaDefense": 1
+					,"subseaAttack": 0
+					,"speed": 3
+					,"loiter": 10
+					,"amphibian": false
+					,"airborne": false
+					,"engineering": false
+					,"seafaring": true
+					,"submarine": false
+					,"airCarry": 0
+					,"landCarry": 0
+				}
+				,{ "name": "Battleship", "type": "Ship", "cost": 80, "consumption": [
+						{"type": "supplies", "qty": 15 }
+						,{"type": "oil", "qty": 10 }
+						,{"type": "steel", "qty": 15 }
+						,{"type": "arms", "qty": 10 }
+					]
+					,"airAttack": 1
+					,"airDefense": 2
+					,"groundAttack": 5
+					,"groundDefense": 0
+					,"seaAttack": 5
+					,"seaDefense": 2
+					,"subseaAttack": 0
+					,"speed": 2
+					,"loiter": 15
+					,"amphibian": false
+					,"airborne": false
+					,"engineering": false
+					,"seafaring": true
+					,"submarine": false
+					,"airCarry": 0
+					,"landCarry": 0
+				}
+				,{ "name": "Carrier", "type": "Ship", "cost": 50, "consumption": [
+						{"type": "supplies", "qty": 15 }
+						,{"type": "oil", "qty": 10 }
+						,{"type": "steel", "qty": 10 }
+						,{"type": "arms", "qty": 5 }
+					]
+					,"airAttack": 0
+					,"airDefense": 0
+					,"groundAttack": 0
+					,"groundDefense": 0
+					,"seaAttack": 0
+					,"seaDefense": 0
+					,"subseaAttack": 0
+					,"speed": 3
+					,"loiter": 15
+					,"amphibian": false
+					,"airborne": false
+					,"engineering": false
+					,"seafaring": true
+					,"submarine": false
+					,"airCarry": 4
+					,"landCarry": 0
+				}
+			];
 		
 	</script>
 
@@ -75,158 +547,53 @@
 			}
 		}
 	
-		var createUnit_TYPES = {
-			"Spearman": 0
-			,"Archer": 1
-			,"Settler": 2
-			,"Labourer": 3
-			,"Villager": 3
-		};
-		
-		function createUnit(map, x, y, typeID, ownerID, citizen)
-		{	
-			if (ownerID == undefined) { ownerID = 0; }
-			var typedef;
-			switch(typeID)
-			{
-				case 0:
-					typedef = new ModelUnit({
-						"name": "Spearman"
-						,"type": "Spearman"
-						,"spriteimage": "images/spearman32.png"
-						,"spritedefs": "spearman_spritedefs.json"
-						,"spriteset": new Spriteset({spriteimage: "images/spearman32.png", spritedefs: "spearman_spritedefs.json"})
-						,"moves": 4
-						,"health": 5
-						,"attack": 2
-						,"defense": 3
-						,"range": 1
-						,"bonusunitIDs": []
-						,"excludetileIDs": [0]
-						,"cost": 10
-						,"costitemIDs": []
-						,"costpopulation": 1
-						,"ownerID": ownerID
-					});
-					break;
-				case 1:
-					typedef = new ModelUnit({
-						"name": "Archer"
-						,"type": "Archer"
-						,"spriteimage": "images/archer32.png"
-						,"spritedefs": "archer_spritedefs.json"
-						,"spriteset": new Spriteset({spriteimage: "images/archer32.png", spritedefs: "archer_spritedefs.json"})
-						,"moves": 4
-						,"health": 5
-						,"attack": 2
-						,"range": 1
-						,"defense": 3
-						,"bonusunitIDs": []
-						,"excludetileIDs": [0]
-						,"cost": 10
-						,"costitemIDs": []
-						,"costpopulation": 1
-						,"ownerID": ownerID
-					});
-					break;
-				case 2:
-					typedef = new ModelUnit({
-						"name": "Settler"
-						,"type": "Settler"
-						,"spriteimage": "images/settler32.png"
-						,"spritedefs": "archer_spritedefs.json"
-						,"spriteset": new Spriteset({spriteimage: "images/settler32.png", spritedefs: "archer_spritedefs.json"})
-						,"moves": 5
-						,"health": 5
-						,"attack": 2
-						,"range": 2
-						,"defense": 3
-						,"bonusunitIDs": []
-						,"excludetileIDs": [0]
-						,"cost": 10
-						,"costitemIDs": []
-						,"costpopulation": 1
-						,"abilities": {
-							"settle": true
-						}
-						,"ownerID": ownerID
-					});
-					break;
-				case 3:
-					typedef = new ModelUnit({
-						"name": "Labourer"
-						,"type": "Labourer"
-						,"spriteimage": "images/labourer32.png"
-						,"spritedefs": "spearman_spritedefs.json"
-						,"spriteset": new Spriteset({spriteimage: "images/labourer32.png", spritedefs: "spearman_spritedefs.json"})
-						,"moves": 5
-						,"health": 5
-						,"attack": 2
-						,"range": 2
-						,"defense": 3
-						,"bonusunitIDs": []
-						,"excludetileIDs": [0]
-						,"cost": 10
-						,"costitemIDs": []
-						,"costpopulation": 1
-						,"abilities": {
-							"plow": true
-							,"villageLabour": true
-							,"buildWall": true
-						}
-						,"ownerID": ownerID
-					});
-					break;				
-			}
-			if (citizen != undefined)
-			{
-				typedef.citizen = citizen;
-			}
-			else
-			{
-				var voro = map.mapdata.get(x, y, 0).voronoi;
-				var bp = map.mapdata.voronoi[voro].name;
-				typedef.citizen = new ModelCitizen({birthplace: bp, name: bp, type: typedef.name});
-			}
-			typedef.x = x;
-			typedef.y = y;
-			typedef.newTurn();
-			typedef = jQuery.extend(true, {}, typedef);
-			map.addUnit(x, y, typedef);
-			map.mapdata.exploreTile(x, y, typedef);
-			return typedef;
-		}
 
 		function createSettlement(x, y, unit)
 		{
 			var unitRange = unit.range;
 			var ownerID = unit.ownerID;
 			var needles = [];
-			var city = map.mapdata.getCity(x, y, unitRange);
-			if (city != false)
-			{
-				needles.push(city);
-			}
-			if (needles.length == 0)
+			var cityRange = 5 		// Minimum number of squares between cities.
+			var city = map.mapdata.voronoi[map.mapdata.get(x, y).voronoi].city;	// Get the regions' city, if there isn't one already.
+			if (city == undefined)
 			{		
 				var voronoiID = map.mapdata.get(x, y).voronoi;
-				var voronoiName = map.mapdata.voronoi[voronoiID].name;
-				var townname = voronoiName;
+				var townname = undefined;
 				if (ownerID == 0)
 				{
-					townname = prompt("Settlement Name", voronoiName);
+					var culture = new CultureAnglo({});
+					culture.generateList();
+//console.log(											townname = prompt("Settlement Name", randomName));
+					var ni = 0;
+					while(townname == undefined)
+					{
+						randomName = culture.namelist[ni];
+						townname = prompt("Settlement Name", randomName);
+						ni++;
+						if (ni >= culture.namelist.length)
+						{
+							ni = 0;
+						}
+					}
 				}
 				var citizen = [];
 				citizen.push(jQuery.extend(true, {}, unit.citizen));
+				if (townname == undefined)
+				{
+					var culture = new CultureAnglo({});
+					culture.generateList();
+					townname = chance.pick(culture.namelist);
+				}
 				var cityObj = new ModelSettlement({name: townname, ownerID: unit.ownerID, citizens: citizen, "x": x, "y": y});
 				map.settle(x, y, cityObj);
+				map.mapdata.setRegionOwner(unit.ownerID, voronoiID);
 				map.mapdata.removeUnit(x, y, unit);
 			}
 			else
 			{
 				if (ownerID == 0)
 				{
-					alert("There are " + needles.length + " cities within " + unitRange + " of this " + unit.name + ", you must settle a little farther away.");
+					alert("This region already has a settlement. If you already own this region, you can divide it and create a new region which can be settled.");
 				}
 			}
 		}
@@ -303,7 +670,7 @@
 				$("#mapPlayerMax").val(playersMax);
 				
 				$("#mapSeedRandomize").click(function () {
-					me.seed = chance.integer({min: 0, max: 9007199254740992});
+					me.seed = chance.integer({min: 0, max: 9007199254740992});64
 					$("#mapSeed").val(chance.pad(me.seed, 16));
 				});
 				
@@ -335,8 +702,65 @@
 				map.mapdata.generate();
 				map.mapdata.exploreAll(0);
 				
+				this.updatePlayerList();
+
+
 				$(this.el).dialog("option", "minWidth", 600);
 				$(this.el).dialog("open");
+			}
+			,updatePlayerList: function ()
+			{
+				$("#mapPlayers").unbind().empty();
+				var me = this;
+				for (var i=0; i < map.nations.length; i++)
+				{
+					var nation = map.nations[i];
+					var p = $("#mapPlayers").append("<li><span class='playerNation'>" + nation.name + "</span></li>");
+					var desc = nation.description;
+					$(p).unbind().click(function () {
+						$("#nationAbout > p").text(desc);
+						var canv = $("#nationAbout > p").append("<canvas id='miniflagcanvas' width=96 height=64></canvas>");
+						var flagctx = document.getElementById("miniflagcanvas").getContext("2d");
+						
+						nation.flag.draw(0, 0, 96, flagctx);
+						
+						
+
+					});
+					$(p).find("span.playerNation").click(function () {
+						var curName = $(this).text();
+						var pn = $(this).unbind().empty().html("<select id='presetNations'></select>");
+						me.populatePresetNations(curName);
+					})
+				}
+			}
+			,populatePresetNations: function (curName)
+			{
+				var me = this;
+				var nationlist = [
+					"England"
+					,"France"
+					,"Germany"
+					,"Italy"
+					,"Russia"
+					,"Japan"
+					,"China"
+				];
+				for (var i=0; i < nationlist.length; i++)
+				{
+					var sel = "";
+					if (nationlist[i] == curName)
+					{
+						sel = " selected";
+					}
+					$("#presetNations").append("<option" + sel + ">" + nationlist[i] + "</option>");
+				}
+				$("#presetNations").change(function () {
+					var newName = $(this).find("option:selected").text();
+					var index = $(this).parent().index();
+					map.nations[index].name = newName;
+					me.updatePlayerList();
+				});
 			}
 			,render: function (arg)
 			{
@@ -354,6 +778,8 @@
 			,height: 250
 			,initialize: function(arg)
 			{
+				this.city = undefined;
+				this.tiles = [];
 				if (arg.city != undefined)
 				{
 					this.city = arg.city;
@@ -367,20 +793,26 @@
 			}
 			,updateText: function()
 			{
+				var me = this;	// Scope hack.
+			
 				$(this.el).find("#cityNameHeader").text(this.city.name);
 
 				$(this.el).find("#cityType").text(this.city.type);
 
 				$(this.el).find("#cityFoodAmt").text(this.city.food);
+
+				$(this.el).find("#cityManufacturing").text(this.city.manufacturing);
 				
 				if (this.city != undefined)
 				{
 					if (this.city.production != undefined)
 					{
-						$(this.el).find	("#cityProduction").text(this.city.production.name);
+						$(this.el).find	("#cityProduction").text(this.city.production);
 					}
 				}
 
+				$(this.el).find("#cityMP").text("Producing " + this.city.production + " " + this.city.mp + '/' + this.city.mp_max);
+				
 				$(this.el).find("#cityOwner").text(this.city.ownerID);
 				$(this.el).find("#cityCitizens").empty();
 				for (var i=0; i < this.city.citizens.length; i++)
@@ -393,6 +825,21 @@
 				{
 					$(this.el).find("#cityInventory").append("<li>" + this.city.inventory.items[i].name + " x" + this.city.inventory.items[i].qty + "</li>");
 				}
+				
+				$(this.el).find("#prodChange").unbind().click(function () {
+					me.city.production = $("#cityProduces option:selected").text();
+					var structure = buildingFactory(me.city.production, me.city);
+					if (!structure)
+					{
+						alert("Error! '" + me.city.production + " not found in buldingFactory()");
+					}
+					else
+					{
+						me.city.mp = 0;
+						me.city.mp_max = structure.buildCost;
+						me.updateText();
+					}
+				});
 			}
 			,render: function()
 			{
@@ -405,31 +852,35 @@
 
 		});
 		var ObjectView = Backbone.View.extend({
-			el: "#ObjectView"
-			,tiles: []
-			,object: undefined
-			,left: 200
-			,top: 200
-			,width: 400
-			,height: 250
-			,x: 0
-			,y: 0
-			,initialize: function(arg)
+			initialize: function(arg)
 			{
+				this.el = "#ObjectView";
+				this.left = 200;
+				this.top = 200;
+				this.width = 400;
+				this.height = 250;
+				this.x = 0;
+				this.y = 0;
+				this.object = undefined;
+				this.tiles = [];
+				this.x = 0;
+				this.y = 0;
+				
 				if (arg.object != undefined)
 				{
 					this.object = arg.object;
 				}
 				var me = this;
-				$(this.el).find("#changeproduction").click(function () {				
+				$(this.el).find("#changeproduction").unbind().click(function () {				
 					me.object.produces = $(me.el).find("#objectProduces option").filter(":selected").text();
 					me.updateText();
 				});
-				$(this.el).find("#changeProductionCity").click(function () {
+				$(this.el).find("#changeProductionCity").unbind().click(function () {
 					var city = $(me.el).find("#productionCityList option").filter(":selected").text();
+					
 					var cities = map.mapdata.getCity(me.x, me.y, 3); 
 					for (var i = 0; i < cities.length; i++)
-					{console.log(">>>>", cities[i]);
+					{
 						if (cities[i].name == city)
 						{
 							me.object.city = cities[i];
@@ -441,18 +892,20 @@
 			}			
 			,show: function(x, y, arg)
 			{
-				if (arg.object != undefined)
+				if (arg != undefined)
 				{
-					this.object = arg.object;
+					this.object = arg;
 				}
 				this.x = x;
 				this.y = y;
 				this.updateText();
 				$(this.el).dialog({title: this.object.name, autoOpen: true, left: this.left, top: this.top
 						,width: 500, height: 400});
+				$(this.el).show();
 			}
 			,updateText: function()
 			{
+				map.mapdata.setObject(this.x, this.y, this.object);
 				$(this.el).find("#productionCityList").empty();
 				var cname = "Nowhere";
 				if (this.object.city != undefined
@@ -469,23 +922,25 @@
 						$(this.el).find("#productionCityList").append("<option>" + nearbyCities[c].name + "</option>");
 					}
 				}
-				console.log("nearbyCities", nearbyCities);
-				console.log("Objectview: ", this.object);			
+
 				$(this.el).find("#currentProduction").text(this.object.produces);
-//				$(this.el).find("#objectProduces").text(this.object.produces);
 				$(this.el).find("#objectConsumes").text(this.object.consumes);
-				/*$(this.el).find("#cityNameHeader").text(this.city.name);
 
-				$(this.el).find("#cityType").text(this.city.type);
-
-				$(this.el).find("#cityFoodAmt").text(this.city.food);
-
-				$(this.el).find("#cityOwner").text(this.city.ownerID);
-				$(this.el).find("#cityCitizens").empty();
-				for (var i=0; i < this.city.citizens.length; i++)
+				if (this.city != undefined)
 				{
-					$(this.el).find("#cityCitizens").append("<li>" + this.city.citizens[i].name + " (" + this.city.citizens[i].type + ")</li>");
-				}*/
+					$(this.el).find("#cityNameHeader").text(this.city.name);
+
+					$(this.el).find("#cityType").text(this.city.type);
+
+					$(this.el).find("#cityFoodAmt").text(this.city.food);
+
+					$(this.el).find("#cityOwner").text(this.city.ownerID);
+					$(this.el).find("#cityCitizens").empty();
+					for (var i=0; i < this.city.citizens.length; i++)
+					{
+						$(this.el).find("#cityCitizens").append("<li>" + this.city.citizens[i].name + " (" + this.city.citizens[i].type + ")</li>");
+					}
+				}
 			}
 			,render: function()
 			{
@@ -552,28 +1007,28 @@
 					var x = parseInt(me.unit.x);
 					var y = parseInt(me.unit.y);
 					me.unit = map.moveUnit(x, y, me.unit, x, y - 1);
-					me.unit.spriteset.setAnimation("Walk North");
+					me.unit.spriteset.setAnimation("Unit");
 					me.updateText();
 				});
 				$(this.el).find("#movesouth").click(function () {
 					var x = parseInt(me.unit.x);
 					var y = parseInt(me.unit.y);
 					me.unit = map.moveUnit(x, y, me.unit, x, y + 1);
-					me.unit.spriteset.setAnimation("Walk South");
+					me.unit.spriteset.setAnimation("Unit");
 					me.updateText();
 				});
 				$(this.el).find("#moveeast").click(function () {
 					var x = parseInt(me.unit.x);
 					var y = parseInt(me.unit.y);
 					me.unit = map.moveUnit(x, y, me.unit, x + 1, y);
-					me.unit.spriteset.setAnimation("Walk East");
+					me.unit.spriteset.setAnimation("Unit");
 					me.updateText();
 				});
 				$(this.el).find("#movewest").click(function () {
 					var x = parseInt(me.unit.x);
 					var y = parseInt(me.unit.y);
 					me.unit = map.moveUnit(x, y, me.unit, x - 1, y);
-					me.unit.spriteset.setAnimation("Walk West");
+					me.unit.spriteset.setAnimation("Unit");
 					me.updateText();
 				});
 				$(this.el).find("#noOrders").click(function () {
@@ -591,22 +1046,22 @@
 						var me = this;
 						$(this.el).find("#settle").click(function () {
 							createSettlement(me.unit.x, me.unit.y, me.unit);
-							map.mapdata.removeUnit(me.unit.x, me.unit.y, me.unit);
 							me.unit = undefined;
 							me.hide();
 						});
 					}
 					if (this.unit.abilities.plow)
 					{
+						var crops = map.tset.getIndexByName("Crops");
 						$(this.el).find("#plow").show();
 						var me = this;
 						$(this.el).find("#plow").click(function () {
 							me.unit.noOrders();
-							map.mapdata.set(me.unit.x, me.unit.y, 7, 0);	// Crops
-							map.mapdata.set(me.unit.x, me.unit.y, 29, 2);	// Plantation
-							map.mapdata.set(me.unit.x, me.unit.y, 0, 1);	// Clear any forests, etc.
-							map.mapdata.addObject(me.unit.x, me.unit.y, new ModelBuilding({
-								name: "Plantation"
+							map.mapdata.set(me.unit.x, me.unit.y, crops, 0);	// Crops
+//							map.mapdata.set(me.unit.x, me.unit.y, 29, 2);	// Plantation
+							map.mapdata.set(me.unit.x, me.unit.y, 0, 1);	// Clear anything on the second layer (forests, etc).
+							map.mapdata.setObject(me.unit.x, me.unit.y, new ModelBuilding({
+								name: "Plantation (" + me.unit.x + ", " + me.unit.y + ")"
 								,produces: 'Nothing'
 								,consumes: 'Nothing'
 								,buildCost: 100
@@ -649,16 +1104,51 @@
 			{
 				this.refresh();
 			}
-			,model: itemlist
+			,model: unitTypes
+			,updateDescription: function (typeIndex)
+			{
+				var contents = "";
+				var unit = unitTypes[typeIndex];
+				contents += "<h1>" + unit.name + "</h1>";
+				
+				contents += "<ul>";
+				
+				/*contents += "<li>Ground Attack: " + unit.groundAttack + "</li>";
+				contents += "<li>Ground Defense: " + unit.groundDefense + "</li>";
+				contents += "<li>Speed: " + unit.speed + "</li>";
+				contents += "<li>Loiter: " + unit.loiter + "</li>";
+				contents += "<li>Amphibious: " + unit.amphibious + "</li>";
+				contents += "<li>Air Attack: " + unit.airAttack + "</li>";
+				contents += "<li>Air Defense: " + unit.airDefense + "</li>";
+				contents += "<li>Airborne: " + unit.airborne + "</li>";
+				contents += "<li>Engineering: " + unit.engineering + "</li>";
+				contents += "<li>Seafaring: " + unit.seafaring + "</li>";
+				contents += "<li>Submarine: " + unit.submarine + "</li>";
+				contents += "<li>Air Carry No.: " + unit.airCarry + "</li>";
+				contents += "<li>Land Carry No.: " + unit.landCarry + "</li>";*/
+								
+				for (var i=0; i < unit.consumes.length; i++)
+				{
+					contents += "<li>" + unit.consumes[i] + "</li>";
+				}
+
+				contents += "</ul>";
+				
+				contents += "<p>" + unit.description + "</p>";
+				
+				$("#helpContent").html(contents);
+			}
 			,refresh: function ()
 			{
-				for (var i in this.model)
+				var me = this;
+				$(this.el).find("ul").empty();
+				for (var i=0; i < unitTypes.length; i++)
 				{
-					var item = $(this.el).find("ul").append("<li>" + i + "</li>");
+					var uType = $(this.el).find("ul").append("<li>" + unitTypes[i].name + "</li>");
 				}
 				$(this.el).find("ul > li").stop().click(function () {
-					var itemname = $(this).text();
-					$("#helpContent").html(itemlist[itemname].description);
+					var unitType = $(this).index();
+					me.updateDescription(unitType);
 				});
 			}
 			,show: function ()
@@ -669,8 +1159,7 @@
 			}
 			,hide: function ()
 			{
-				$(this.el).dialog({title: this.object.name, autoOpen: true, left: this.left, top: this.top
-						,width: 500, height: 400});
+				$(this.el).close();
 			}
 		});
 		var UnitSelectView = Backbone.View.extend({
@@ -761,8 +1250,9 @@
 					&& map.mapdata.voronoi[i].height > map.mapdata.sea_height
 				)
 				{
-					createUnit(map, map.mapdata.voronoi[i].x, map.mapdata.voronoi[i].y, 2, placedID);
-					if (placedID == playerCurrent)
+					var u = unitFactory(map, map.mapdata.voronoi[i].x, map.mapdata.voronoi[i].y, "Citizen", placedID);
+					console.log("unitFactory Created:", map.mapdata.voronoi[i].x, map.mapdata.voronoi[i].y, u);
+					if (placedID == playerCurrent && u)
 					{
 						map.scrollx = map.mapdata.voronoi[i].x;
 						map.scrolly = map.mapdata.voronoi[i].y;
@@ -898,7 +1388,7 @@
 				width: 400
 			});
 			
-			var MapGenerator = new mapGenerateView({});			
+			MapGenerator = new mapGenerateView({});			
 
 			$("#contents").mousemove(function (e) {
 				var tilex = Math.floor(e.clientX / 32) + map.scrollx;
@@ -952,7 +1442,12 @@
 					var object = map.mapdata.getObjects(tilex, tiley);
 					if (object != undefined && object != false)
 					{
-						objectView = new ObjectView({'object': object[0]});
+						if (objectView != undefined)
+						{
+							objectView.remove();
+							objectView = undefined;
+						}
+						objectView = new ObjectView({'object': object});
 						objectView.show(tilex, tiley, object);
 					}
 				}
@@ -966,8 +1461,19 @@
 				var tile1 = map.mapdata.get(tilex, tiley, 1);
 				var tile2 = map.mapdata.get(tilex, tiley, 2);
 
-				//console.log("VORONOI ID:", tile0, tilex, tiley, "Move Cost:", map.mapdata.moveCost(tilex, tiley));
-				var message = "Tile ID " + tile0.tileid;
+				var message;
+				if (tile2.tileid > 0)
+				{
+					message = "Tile ID " + tile2.tileid;
+				}
+				else if (tile1.tileid > 0)
+				{
+					message = "Tile ID " + tile1.tileid;
+				}
+				else
+				{	
+					message = "Tile ID " + tile0.tileid;
+				}
 				if (map.tooltip.text.length > 0
 					&& map.tooltip.x == tilex && map.tooltip.y == tiley)
 				{
@@ -977,6 +1483,12 @@
 				
 				return false; 
 			});
+
+			$("#mapFlagDesign").click( function () {
+				$("#FlagDesign").dialog({autoOpen: true, left: 5, top: 5
+										,width: 600, height: 500});
+			});
+
 
 			function checkKeys()
 			{
@@ -1010,6 +1522,7 @@
 <!--// <input type='button' value='Clear Tile' onclick="tool_tileindex = undefined; $('#tiles > li').css('color', '#000');"> //-->
 <input type='button' value='New Turn' onclick="doNewTurn();">
 <input type='button' value='Help' onclick="helpview.show();">
+<input type='button' value="Flag Designer" id='mapFlagDesign'>
 <div id="tiles" width="800px">
 	
 </div>
@@ -1027,8 +1540,54 @@
 	<p>
 		<h2 id='cityNameHeader'>City Name</h2>
 		<p>
-			Production: <span id='cityProduction'></span>
+			Production: <span id='cityProduction'></span> <input type='button' id = "prodChange" value='Change'>
+			<br><span><select id='cityProduces'>
+						<option class="wealth">Wealth</option>
+						
+						<option class="building factory">Factory</option>
+						<option class="building armaments">Armaments Factory</option>
+						<option class="building vehicle">Vehicle Factory</option>
+						<option class="building airplane">Airplane Factory</option>
+						<option class="building research">Research Lab</option>
+
+						<option class="building coalpower">Coal Plant</option>
+						<option class="building hydro">Hydroelectric Plant</option>
+						<option class="building gas">Gas Powered Plant</option>
+						<option class="building nuclear">Nuclear Plant</option>
+					
+						<option class="unit infantry">Riflemen</option>
+						<option class="unit infantry">Machinegunners</option>
+						<option class="unit infantry">Mechanized Infantry</option>
+
+						<option class="unit armour">Tank</option>
+
+						<option class="unit artillery">Artillery</option>
+
+						<option class="unit airplane fighter">Fighter</option>
+						<option class="unit airplane bomber">Bomber</option>
+
+						<option class="unit naval destroyer">Destroyer</option>
+						<option class="unit naval cruiser">Cruiser</option>
+						<option class="unit naval battleship">Battleship</option>
+						<option class="unit naval submarine">Submarine</option>
+						<option class="unit naval transport">Transport</option>
+						
+						<option class="unit civilian Citizen">Citizen</option>
+						<option class="unit civilian engineer">Engineer</option>
+					</select>
+				</span>
+			<br/>
+
 		</p>
+		
+		<p>
+			Manufacturing: <span id='cityManufacturing'></span>
+		</p>
+
+		<p>
+			Owner: <span id='cityMP'></span>
+		</p>
+
 		<p>
 			Owner: <span id='cityOwner'></span>
 		</p>
@@ -1052,6 +1611,7 @@
 				
 			</ul>
 		</p>
+		
 	</p>
 
 </div>
@@ -1064,16 +1624,14 @@
 			<b><span id='objectType'></span></b> <br/>
 			Produces: <span id='currentProduction'></span>
 			<br><span id='productionControls'><select id='objectProduces'>
-						<option>Wheat</option>
-						<option>Rice</option>
-						<option>Corn</option>
-						<option>Mutton</option>
-						<option>Beef</option>
-						<option>Oranges</option>
-						<option>Cherries</option>
-						<option>Grapes</option>
-						<option>Pears</option>
-						<option>Olives</option>
+						<option>Grain Farms</option>
+						<option>Cotton Plantation</option>
+						<option>Rubber Plantation</option>
+						<option>Paper Mill</option>
+						<option>Research Facility</option>
+						<option>Coal Mine</option>
+						<option>Metals Mine</option>
+						<option>Oil Derrick</option>
 					</select> <input type='button' id='changeProduction' value='Change'/> <span id='changecost'>(cost to change)</span>
 				</span>
 			<br/>
@@ -1111,15 +1669,44 @@
 			</p>
 		</div>
 		<div id="tabs-2">
-			<p>
-				Max Number of Players: <input type='text' id='mapPlayerMax' style="width: 50px;"> <br/>
-				<div><span style="float: left; margin-right:8px;">Starting Units:</span> <select id='mapStartingUnits' style="width:150px;" size=8 multiple>
-							<option value='2' selected="selected">Settler</option>
-							<option value='0'>Spearman</option>
-							<option value='1'>Archer</option>
-						</select>
+			<div id='nationAbout' style="float: right; width: 300px; padding: 0px; margin-top: 0px;">
+				<p style="width: 100px: padding: 0px; margin: 5px; overflow-y: scroll; height: 200px;">
+				</p>
+			</div>
+
+			<div style="width: 200px;">
+				Max Number of Players: <input type='text' id='mapPlayerMax' style="width: 50px;"> 
+				<script type='text/javascript'>
+					function increasePlayers()
+					{
+						var pcount = parseInt($("#mapPlayerMax").val());
+						pcount++;
+						playersMax = pcount;
+						$("#mapPlayerMax").val(pcount);
+						map.nations.push(new NationTribe({}));
+						MapGenerator.updatePlayerList();
+					}
+					
+					function decreasePlayers()
+					{
+						var pcount = parseInt($("#mapPlayerMax").val());
+						pcount--;
+						if (pcount < 0)
+						{
+							pcount = 0;
+						}
+						playersMax = pcount;
+						$("#mapPlayerMax").val(pcount);
+					}
+				</script>
+					<input type='button' value='-' onclick='decreasePlayers();'> <input type='button' value='+' onclick='increasePlayers();'> <br/>
+				
+				<div>
+					<div id='mapPlayers' style="width:180px; height:150px; overflow-y: scroll;">
+							
+					</div>
 				</div>
-			</p>
+			</div>
 		</div>
 		<div id="tabs-3">
 			<p>
@@ -1132,36 +1719,6 @@
 	</p>
 </div>
 
-
-<div id="PlayerSetup" height="250px" width="300px" title="Player Setup" style="display: none">
-	
-	<p>
-		Player Name: <input type="text" id="playerName" style="width: 50px;"> <br/>
-		Class: 	<select id="playerClass" style="width: 150px">
-				<option value="0" selected>Spearman</option>
-				<option value="1">Archer</option>
-			</select>
-
-		<hr/>
-		
-		Attack: <input type="text" id="playerStrength" style="width: 50px;"> <br/>
-		Defense: <input type="text" id="playerDefense" style="width: 50px;"> <br/>
-		Wisdom: <input type="text" id="playerWisdom" style="width: 50px;"> <br/>
-		Constitution: <input type="text" id="playerConstitution" style="width: 50px;"> <br/>
-		Agility: <input type="text" id="playerAgility" style="width: 50px;"> <br/>
-		
-		<hr/>
-		
-		Race: 	<select id="playerRace" style="width: 150px">
-				<option value="human" selected>Human</option>
-			</select>
-	</p>	
-	
-	<p>
-		<input type='button' id='playerContinue' value='Continue'>
-	</p>
-	
-</div>
 
 <div id="UnitSelection" height="250px" width="125px" title="Select Unit" style="display: none">
 
@@ -1186,6 +1743,14 @@
 	</ul>
 	
 	<p id='helpContent' style="widh: 600px">
+	</p>
+	
+</div>
+
+<div id="FlagDesign" title="Flag Design" style="display: none">
+	
+	<canvas width='200' height='120'>
+		
 	</p>
 	
 </div>

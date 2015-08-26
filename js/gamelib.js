@@ -22,139 +22,13 @@
 
 		var regionColours = [
 			"#f00"
-			,"#00b"
-			,"#b400ff"
+			,"#00f"
+			,'#0f0'
+			,"#f0f"
 			,"#ff0"
-			,"#00797a"
-			,"#7a000b"
-			,"#000e7a"
-			,"#5b007a"
-			,"#ff00df"
-			,"#000"
-			,"#ffc2e2"
-			,"#003332"
+			,"#0ff"
+			,"#a00"
 		];
-
-		// *** Region NameGen Prototypes **********************************************************************
-
-		function latin()
-		{
-			this.prefixlist = [
-						'Bru', 'Brut', 'Dom', 'Dem', 'Jul', 'Gae', 'Sev', 'August', 'Sever', 'Cat'
-						, 'Sabin', 'Sab', 'Cae', 'Cal', 'Car', 'Had', 'Hadr', 'Tarqu', 'Que', 'Quae'
-						, 'Rom', 'Romul', 'Rem', 'Vei', 'Vel', 'Val', 'Ver', "Pyr", "Epir", "Ith"
-						,"Gaul", "Illyr", "Lyc", "Xyn", "Xyd", "Deu", "Panon", "Rhod", "Dac", "Tro"
-					];
-			this.suffixlist = [
-						'ae', 'us', 'ii', 'ex', 'ix', 'a', 'as', 'ia', 'ria', 'lus', 'es', 'um', 'em'
-						,'ilius', 'lis', 'lius', 'lium', 'lirum', 'urum', 'ilis', 'irix', 'ria', 'alus'
-						,'ugus'
-					];
-		
-			this.namelist = [];
-		}
-		latin.prototype.generateList = function()
-		{
-			this.namelist = [];
-			var shortlist = [];
-			for (var k = 0; k < 10; k++)
-			{
-				var randint = getRandomInt(0, this.prefixlist.length - 1);
-				shortlist.push(this.prefixlist[randint]);
-			}
-		
-			for (var k = 0; k < shortlist.length; k++)
-			{
-				var randint = getRandomInt(0, this.suffixlist.length - 1);
-				var name = shortlist[k] + this.suffixlist[randint];
-				name = name.replace("ee", "e");
-				name = name.replace("rr", "r");
-				name = name.replace("iii", "ii");
-				this.namelist.push(name);
-			}
-		};
-	
-		function germanic()
-		{
-			this.prefixlist = ['Eur', 'Ekk', 'Elf', 'Act', 'Ald', 'Eal', 'Rol', 'Stil', 'Ang', 'Jut', 'Will', 'Veld'
-						, 'Ber', 'Os', 'Bil', 'Druc', 'Eber', 'Era', 'Far', 'Gan', 'Gang', 'Har', 'Man', 'Sieg'
-						, 'Tan', 'Tanc', 'Wand', 'Wig', 'Thus', 'Thor', 'Tor', 'Wulf', "Ut"
-					];
-			this.suffixlist = ['ic', 'er', 'ulf', 'is', 'ad', 'ind', 'ild', 'und', 'old', 'eld', 'helm'
-					,'and', 'en', 'ick', 'uck', 'olm', 'em', 'elm', 'im', 'ox', 'ech'
-					];
-		
-			this.namelist = [];
-		}
-		germanic.prototype.generateList = function()
-		{
-			this.namelist = [];
-			var shortlist = [];
-			for (var k = 0; k < 10; k++)
-			{
-				var randint = getRandomInt(3, this.prefixlist.length - 1);
-				shortlist.push(this.prefixlist[randint]);
-			}
-		
-			for (var k = 0; k < shortlist.length; k++)
-			{
-				var randint = getRandomInt(3, this.suffixlist.length - 1);
-				var name = shortlist[k] + this.suffixlist[randint]
-				this.namelist.push(name);
-			}
-		};	
-
-		function sumerian()
-		{
-			this.prefixlist = ['Am', 'Ad', 'Ma', 'Bil', 'Gar', 'Er', 'Ish', 'Giz', 'Mez', 'Haz', 'Mesh'
-						,'Sha', 'Nin', 'Til', 'Ur', 'Zi'
-					];
-			this.suffixlist = ['la', 'rish', 'dri', 'kish', 'zal', 'zul', 'da', 'ma', 'shur', 'zi', 'maz', 'milla'
-						,'bin', 'rah', 'bar'
-					];
-		
-			this.namelist = [];
-		}
-		sumerian.prototype.generateList = function()
-		{
-			this.namelist = [];
-			var shortlist = [];
-			for (var k = 0; k < 10; k++)
-			{
-				var randint = getRandomInt(3, this.prefixlist.length - 1);
-				shortlist.push(this.prefixlist[randint]);
-			}
-		
-			for (var k = 0; k < shortlist.length; k++)
-			{
-				var randint = getRandomInt(3, this.suffixlist.length - 1);
-				var name = shortlist[k] + this.suffixlist[randint]
-				this.namelist.push(name);
-			}
-		};	
-	
-		function generateNames(selection)
-		{
-			var charset = document.getElementById('charset');
-		
-			var generator;
-			if (selection == 'latin')
-			{
-				generator = new latin();
-			}
-			if (selection == 'germanic')
-			{
-				generator = new germanic();
-			}
-			if (selection == 'sumerian')
-			{
-				generator = new sumerian();
-			}
-			generator.generateList();
-			return generator.namelist;
-		}
-		
-		// *** Region NameGen Prototypes **********************************************************************
 
 		// *** Models and Views *********************************
 
@@ -197,7 +71,7 @@
 			,image: undefined
 			,tilewidth: 32
 			,tileheight: 32
-			,coordlist: []
+			,coordlist: undefined
 			,load: function (url)
 			{
 				this.image = new Image();
@@ -206,6 +80,37 @@
 					url = this.url + "?v=" + tokenx36();
 				}
 				this.image.src = url;
+				this.coordlist = [
+					{"name": "Sea", "layer": 0, "x": 1, "y": 1, "movecost": 1, "fertility": 0,  "excludeIDs": [], "colour": "#28e", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Grass", "layer": 0, "x": 2, "y": 1, "movecost": 2, "fertility": 3,  "excludeIDs": [], "colour": "#8e5", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Plains", "layer": 0, "x": 3, "y": 1, "movecost": 2, "fertility": 2, "excludeIDs": [], "colour": "#9f4", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Desert", "layer": 0, "x": 4, "y": 1, "movecost": 2, "fertility": 2, "excludeIDs": [], "colour": "#dd9", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Roads", "layer": 1, "x": 8, "y": 4, "movecost": -2, "fertility": 0, "excludeIDs": [0], "colour": "#dd9", "bgImage": "image/bg_swampland.png"}	
+					,{"name": "Forest", "layer": 1, "x": 10, "y": 1, "movecost": 2, "fertility": 1, "excludeIDs": [0], "colour": "#00a500", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Hills", "layer": 2, "x": 2, "y": 2, "movecost": 2, "fertility": -1, "excludeIDs": [0], "colour": "#dd9", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Mountains", "layer": 2, "x": 1, "y": 2, "movecost": 3, "fertility": -1, "excludeIDs": [0], "colour": "#bbb", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Crops", "layer": 1, "x": 4, "y": 2, "movecost": 0, "fertility": 3, "excludeIDs": [0], "colour": "#fdd", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Town", "layer": 2, "x": 1, "y": 3, "movecost": -1, "fertility": 0, "excludeIDs": [0], "colour": "#000", "bgImage": "image/bg_swampland.png"}
+					,{"name": "City", "layer": 2, "x": 2, "y": 3, "movecost": -2, "fertility": 0, "excludeIDs": [0], "colour": "#000", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Metropolis", "layer": 2, "x": 3, "y": 3, "movecost": -2, "fertility": 0, "excludeIDs": [0], "colour": "#000", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Fog of War", "layer": 2, "x": 1, "y": 4, "movecost": 0, "fertility": 0, "excludeIDs": [], "colour": "#555", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Dead Forest", "layer": 2, "x": 9, "y": 4, "movecost": 1, "fertility": 0, "excludeIDs": [0], "colour": "#dc0", "bgImage": "image/bg_swampland.png"}
+					,{"name": "River", "layer": 1, "x": 4, "y": 4, "movecost": -1, "fertility": 2, "excludeIDs": [0], "colour": "#00f", "bgImage": "image/bg_swampland.png"}
+					,{"name": "River East/West", "layer": 1, "x": 3, "y": 2, "movecost": -1, "fertility": 2, "excludeIDs": [0], "colour": "#00f", "bgImage": "image/bg_swampland.png"}
+					,{"name": "River North/South", "layer": 1, "x": 3, "y": 2, "movecost": -1, "fertility": 2, "excludeIDs": [0], "colour": "#00f", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Riverbend West to North", "layer": 1, "x": 3, "y": 2, "movecost": -1, "fertility": 2, "excludeIDs": [0], "colour": "#00f", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Riverbend South to West", "layer": 1, "x": 3, "y": 2, "movecost": -1, "fertility": 2, "excludeIDs": [0], "colour": "#00f", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Riverbend East to North", "layer": 1, "x": 3, "y": 2, "movecost": -1, "fertility": 2, "excludeIDs": [0], "colour": "#00f", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Riverbend South to East", "layer": 1, "x": 3, "y": 2, "movecost": -1, "fertility": 2, "excludeIDs": [0], "colour": "#00f", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Woods (Sparce)", "layer": 1, "x": 5, "y": 2, "movecost": 2, "fertility": 1, "excludeIDs": [0], "colour": "#00a500", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Woods", "layer": 1, "x": 6, "y": 2, "movecost": 2, "fertility": 1, "excludeIDs": [0], "colour": "#00a500", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Woods (Dense)", "layer": 1, "x": 7, "y": 2, "movecost": 2, "fertility": 1, "excludeIDs": [0], "colour": "#00a500", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Swamp", "layer": 0, "x": 13, "y": 5, "movecost": 4, "fertility": 1, "excludeIDs": [0], "colour": "#0fa", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Wall", "layer": 2, "x": 14, "y": 10, "movecost": 99, "fertility": 1, "excludeIDs": [0], "colour": "#ccc", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Wall Gate - Open", "layer": 2, "x": 14, "y": 10, "movecost": 0, "fertility": 1, "excludeIDs": [0], "colour": "#ccc", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Wall Gate - Closed", "layer": 2, "x": 14, "y": 10, "movecost": 99, "fertility": 1, "excludeIDs": [0], "colour": "#ccc", "bgImage": "image/bg_swampland.png"}
+					,{"name": "Plantation", "layer": 2, "x": 14, "y": 9, "movecost": 99, "fertility": 1, "excludeIDs": [0], "colour": "#c00", "bgImage": "image/bg_swampland.png"}
+				];
 			}
 			,addTile: function (name, tx, ty, l, mc)
 			{
@@ -276,13 +181,12 @@
 			,maplayers: 3
 			,seed: undefined
 			,tiles: []
-			
 			,units: []
 			,objects: []
 
 			// Map generation settings
-			,voronoi_max: 48
-			,voronoi_min: 32
+			,voronoi_max: 128
+			,voronoi_min: 96
 			,voronoi: []
 			,voronoi_colours: []
 			,max_height: 10
@@ -300,17 +204,14 @@
 			,randomizeVoronoi: function()
 			{
 
-				var vnameList = generateNames("latin");
-				vnameList = vnameList.concat(generateNames("germanic"));
-				vnameList = vnameList.concat(generateNames("sumerian"));
-
-				var name = vnameList[nameid];
+				var name = "Unnamed";
 				var v = {
 					"height": height
 					, "x": 0
 					, "y": 0
 					, "tolerance": 0.1
 					, "name": name
+					, "city": undefined
 				};
 				this.voronoi.push(v);
 				v.x = this.mapwidth;
@@ -337,8 +238,7 @@
 				var voronoi_max = getRandomInt(this.voronoi_min, this.voronoi_max);
 				for (var i=0; i < voronoi_max; i++)
 				{
-					var nameid = getRandomInt(0, vnameList.length - 1);
-					var name = vnameList[nameid];
+					var name = "Unnamed";
 					var height = getRandomArbitrary(this.min_height, this.max_height);
 
 					var x = parseInt(chance.normal({mean: this.mapwidth / 2, dev: this.mapwidth * 0.4}));
@@ -368,6 +268,7 @@
 						, "y": y
 						, "tolerance": tolerance
 						, "name": name
+						, "city": undefined
 					};
 					this.voronoi.push(v);
 					this.voronoi_colours.push(chance.pick(regionColours));
@@ -396,6 +297,11 @@
 				// sample the voronoi point's height and add a random tolerance +/- that point's
 				// value.
 				this.randomizeVoronoi();
+				
+				var sea = this.tset.getIndexByName("Sea");
+				var grass = this.tset.getIndexByName("Grass");
+				var mountain = this.tset.getIndexByName("Mountains");
+				var hill = this.tset.getIndexByName("Hills");
 
 				for (var j=0; j < this.mapheight; j++)
 				{
@@ -416,90 +322,110 @@
 						var closestHeight = this.voronoi[closest].height + getRandomArbitrary(-1, 1);
 						if (closestHeight < this.sea_height)
 						{
-							this.set(i,j,0,0); // Set the tile to Sea if it's below sea level.
+							this.set(i,j,sea,0); // Set the tile to Sea if it's below sea level.
 						}
 						else if (closestHeight > this.mountain_height)
 						{
-							this.set(i,j,1,0); // Set the tile to Grass if it's above sea level.
-							this.set(i,j,6,1); // Set the tile on layer 2 to Mountain
+							this.set(i,j,grass,0); // Set the tile to Grass if it's above sea level.
+							this.set(i,j,mountain,2); // Set the tile on layer 2 to Mountain
 						}
 						else if (closestHeight > this.mountain_height - this.hills_tolerance)
 						{
-							this.set(i,j,1,0); // Set the tile to Grass if it's above sea level.
-							this.set(i,j,5,1); // Set the tile on layer 2 to Hill
+							this.set(i,j,grass,0); // Set the tile to Grass if it's above sea level.
+							this.set(i,j,hill,2); // Set the tile on layer 2 to Hill
 						}						
 						else if (closestHeight > this.sea_height)
 						{
 							var tID = getRandomInt(1, 2);
-							this.set(i,j,tID,0); // Set the tile to Grass or Desert if it's above sea level.
+							this.set(i,j,tID,0); // Set the tile to Grass or Plains if it's above sea level.
 						}
 						this.setVoronoi(i, j, closest);
 						this.setHeight(i, j, closestHeight);
+						this.setOwner(i, j, -1);
 					}
 				}
 				
-				this.createRivers();
+				//this.createRivers();
 				
 				this.doBiomes();
 
-				
+				// this.regionGeoTypes();
 			}
-			,evolveBiomes: function()
+			,regionGeoTypes: function()
 			{
 				for (var j=0; j < this.mapheight; j++)
 				{
 					for (var i=0; i < this.mapwidth; i++)
 					{
 					
+						
+						
+					}
+				}
+			}
+			,evolveBiomes: function()
+			{
+				var sea = this.tset.getIndexByName("Sea");
+				var grass = this.tset.getIndexByName("Grass");
+				var river = this.tset.getIndexByName("River");
+				var desert = this.tset.getIndexByName("Desert");
+				var forest = this.tset.getIndexByName("Woods");
+				var plains = this.tset.getIndexByName("Plains");
+
+				for (var j=0; j < this.mapheight; j++)
+				{
+					for (var i=0; i < this.mapwidth; i++)
+					{
+					
 						var seaCount = 0;
-						if (this.get(i - 1, j    , 0).tileid == 0) { seaCount++; }
-						if (this.get(i + 1, j    , 0).tileid == 0) { seaCount++; }
-						if (this.get(i - 1, j - 1, 0).tileid == 0) { seaCount++; }
-						if (this.get(i    , j - 1, 0).tileid == 0) { seaCount++; }
-						if (this.get(i + 1, j - 1, 0).tileid == 0) { seaCount++; }
-						if (this.get(i - 1, j + 1, 0).tileid == 0) { seaCount++; }
-						if (this.get(i    , j + 1, 0).tileid == 0) { seaCount++; }
-						if (this.get(i + 1, j + 1, 0).tileid == 0) { seaCount++; }
+						if (this.get(i - 1, j    , 0).tileid == sea) { seaCount++; }
+						if (this.get(i + 1, j    , 0).tileid == sea) { seaCount++; }
+						if (this.get(i - 1, j - 1, 0).tileid == sea) { seaCount++; }
+						if (this.get(i    , j - 1, 0).tileid == sea) { seaCount++; }
+						if (this.get(i + 1, j - 1, 0).tileid == sea) { seaCount++; }
+						if (this.get(i - 1, j + 1, 0).tileid == sea) { seaCount++; }
+						if (this.get(i    , j + 1, 0).tileid == sea) { seaCount++; }
+						if (this.get(i + 1, j + 1, 0).tileid == sea) { seaCount++; }
 
 						var riverCount = 0;
-						if (this.get(i - 1, j    , 1).tileid == 13) { riverCount++; }
-						if (this.get(i + 1, j    , 1).tileid == 13) { riverCount++; }
-						if (this.get(i - 1, j - 1, 1).tileid == 13) { riverCount++; }
-						if (this.get(i    , j - 1, 1).tileid == 13) { riverCount++; }
-						if (this.get(i + 1, j - 1, 1).tileid == 13) { riverCount++; }
-						if (this.get(i - 1, j + 1, 1).tileid == 13) { riverCount++; }
-						if (this.get(i    , j + 1, 1).tileid == 13) { riverCount++; }
-						if (this.get(i + 1, j + 1, 1).tileid == 13) { riverCount++; }
+						if (this.get(i - 1, j    , 1).tileid == river) { riverCount++; }
+						if (this.get(i + 1, j    , 1).tileid == river) { riverCount++; }
+						if (this.get(i - 1, j - 1, 1).tileid == river) { riverCount++; }
+						if (this.get(i    , j - 1, 1).tileid == river) { riverCount++; }
+						if (this.get(i + 1, j - 1, 1).tileid == river) { riverCount++; }
+						if (this.get(i - 1, j + 1, 1).tileid == river) { riverCount++; }
+						if (this.get(i    , j + 1, 1).tileid == river) { riverCount++; }
+						if (this.get(i + 1, j + 1, 1).tileid == river) { riverCount++; }
 						
 						var desertCount = 0;
-						if (this.get(i - 1, j    , 0).tileid == 2) { desertCount++; }
-						if (this.get(i + 1, j    , 0).tileid == 2) { desertCount++; }
-						if (this.get(i - 1, j - 1, 0).tileid == 2) { desertCount++; }
-						if (this.get(i    , j - 1, 0).tileid == 2) { desertCount++; }
-						if (this.get(i + 1, j - 1, 0).tileid == 2) { desertCount++; }
-						if (this.get(i - 1, j + 1, 0).tileid == 2) { desertCount++; }
-						if (this.get(i    , j + 1, 0).tileid == 2) { desertCount++; }
-						if (this.get(i + 1, j + 1, 0).tileid == 2) { desertCount++; }
+						if (this.get(i - 1, j    , 0).tileid == desert) { desertCount++; }
+						if (this.get(i + 1, j    , 0).tileid == desert) { desertCount++; }
+						if (this.get(i - 1, j - 1, 0).tileid == desert) { desertCount++; }
+						if (this.get(i    , j - 1, 0).tileid == desert) { desertCount++; }
+						if (this.get(i + 1, j - 1, 0).tileid == desert) { desertCount++; }
+						if (this.get(i - 1, j + 1, 0).tileid == desert) { desertCount++; }
+						if (this.get(i    , j + 1, 0).tileid == desert) { desertCount++; }
+						if (this.get(i + 1, j + 1, 0).tileid == desert) { desertCount++; }
 
 						var grassCount = 0;
-						if (this.get(i - 1, j    , 0).tileid == 2) { grassCount++; }
-						if (this.get(i + 1, j    , 0).tileid == 2) { grassCount++; }
-						if (this.get(i - 1, j - 1, 0).tileid == 2) { grassCount++; }
-						if (this.get(i    , j - 1, 0).tileid == 2) { grassCount++; }
-						if (this.get(i + 1, j - 1, 0).tileid == 2) { grassCount++; }
-						if (this.get(i - 1, j + 1, 0).tileid == 2) { grassCount++; }
-						if (this.get(i    , j + 1, 0).tileid == 2) { grassCount++; }
-						if (this.get(i + 1, j + 1, 0).tileid == 2) { grassCount++; }
+						if (this.get(i - 1, j    , 0).tileid == grass) { grassCount++; }
+						if (this.get(i + 1, j    , 0).tileid == grass) { grassCount++; }
+						if (this.get(i - 1, j - 1, 0).tileid == grass) { grassCount++; }
+						if (this.get(i    , j - 1, 0).tileid == grass) { grassCount++; }
+						if (this.get(i + 1, j - 1, 0).tileid == grass) { grassCount++; }
+						if (this.get(i - 1, j + 1, 0).tileid == grass) { grassCount++; }
+						if (this.get(i    , j + 1, 0).tileid == grass) { grassCount++; }
+						if (this.get(i + 1, j + 1, 0).tileid == grass) { grassCount++; }
 
 						var forestCount = 0;
-						if (this.get(i - 1, j    , 1).tileid == 4) { forestCount++; }
-						if (this.get(i + 1, j    , 1).tileid == 4) { forestCount++; }
-						if (this.get(i - 1, j - 1, 1).tileid == 4) { forestCount++; }
-						if (this.get(i    , j - 1, 1).tileid == 4) { forestCount++; }
-						if (this.get(i + 1, j - 1, 1).tileid == 4) { forestCount++; }
-						if (this.get(i - 1, j + 1, 1).tileid == 4) { forestCount++; }
-						if (this.get(i    , j + 1, 1).tileid == 4) { forestCount++; }
-						if (this.get(i + 1, j + 1, 1).tileid == 4) { forestCount++; }
+						if (this.get(i - 1, j    , 1).tileid == forest) { forestCount++; }
+						if (this.get(i + 1, j    , 1).tileid == forest) { forestCount++; }
+						if (this.get(i - 1, j - 1, 1).tileid == forest) { forestCount++; }
+						if (this.get(i    , j - 1, 1).tileid == forest) { forestCount++; }
+						if (this.get(i + 1, j - 1, 1).tileid == forest) { forestCount++; }
+						if (this.get(i - 1, j + 1, 1).tileid == forest) { forestCount++; }
+						if (this.get(i    , j + 1, 1).tileid == forest) { forestCount++; }
+						if (this.get(i + 1, j + 1, 1).tileid == forest) { forestCount++; }
 							
 						if (
 							forestCount > this.forest_tolerance
@@ -508,16 +434,16 @@
 							&& this.get(i, j, 1).tileid != 13
 						)
 						{
-							if (this.get(i, j, 0).tileid == 1)
+							if (this.get(i, j, 0).tileid == grass)
 							{
 								// Grassland to Forest.
-								this.set(i, j, 4, 1);
+								this.set(i, j, forest, 1);
 							}
-							else if (this.get(i, j, 0).tileid == 2 && (seaCount > 0 || forestCount > this.forest_tolerance * 4))
+							else if (this.get(i, j, 0).tileid == plains && (seaCount > 0 || forestCount > this.forest_tolerance * 4))
 							{
 								if (getRandomArbitrary(0, 1) > 0.6)
 								{								// Plains to Forest.
-									this.set(i, j, 4, 1);
+									this.set(i, j, forest, 1);
 								}
 							}
 						}
@@ -527,15 +453,15 @@
 								&& this.get(i, j, 1).tileid == 13
 							)
 							|| (
-								this.get(i, j, 0).tileid == 2 && (riverCount > 0 || seaCount > 0) && grassCount > 0
+								this.get(i, j, 0).tileid == plains && (riverCount > 0 || seaCount > 0) && grassCount > 0
 							)
 						)
 						{
-							this.set(i, j, 1, 0)		// Upgrade to grassland
+							this.set(i, j, grass, 0)		// Upgrade to grassland
 						}
 						
 						// Prevent forests from becoming too blobby: random die-off
-						if (forestCount > 4 && this.get(i, j, 1).tileid == 4)
+						if (forestCount > 4 && this.get(i, j, 1).tileid == forest)
 						{
 							if (getRandomArbitrary(0, 1) > 0.8)
 							{
@@ -556,11 +482,16 @@
 			,createRivers: function()
 			{
 				var maxChecks = 1000;
+				var river = this.tset.getIndexByName("River");
+				var sea = this.tset.getIndexByName("Sea");
+				var hills = this.tset.getIndexByName("Hills");
+				var mountains = this.tset.getIndexByName("Mountains");
 				for (var r=0; r < this.riverCount; r++)
 				{
 					var complete = false;
 					var x = 0; var y = 0;
 					var dx = 0; var dy = 0;
+					
 
 					while(!complete && maxChecks > 0)
 					{
@@ -568,28 +499,28 @@
 						y = getRandomInt(0, this.mapheight - 10) + 5;
 
 						var seaCount = 0;
-						if (this.get(x - 1, y    , 0).tileid == 0) { seaCount++; }
-						if (this.get(x + 1, y    , 0).tileid == 0) { seaCount++; }
-						if (this.get(x - 1, y - 1, 0).tileid == 0) { seaCount++; }
-						if (this.get(x    , y - 1, 0).tileid == 0) { seaCount++; }
-						if (this.get(x + 1, y - 1, 0).tileid == 0) { seaCount++; }
-						if (this.get(x - 1, y + 1, 0).tileid == 0) { seaCount++; }
-						if (this.get(x    , y + 1, 0).tileid == 0) { seaCount++; }
-						if (this.get(x + 1, y + 1, 0).tileid == 0) { seaCount++; }
+						if (this.get(x - 1, y    , 0).tileid == sea) { seaCount++; }
+						if (this.get(x + 1, y    , 0).tileid == sea) { seaCount++; }
+						if (this.get(x - 1, y - 1, 0).tileid == sea) { seaCount++; }
+						if (this.get(x    , y - 1, 0).tileid == sea) { seaCount++; }
+						if (this.get(x + 1, y - 1, 0).tileid == sea) { seaCount++; }
+						if (this.get(x - 1, y + 1, 0).tileid == sea) { seaCount++; }
+						if (this.get(x    , y + 1, 0).tileid == sea) { seaCount++; }
+						if (this.get(x + 1, y + 1, 0).tileid == sea) { seaCount++; }
 
 						var riverCount = 0;
-						if (this.get(x - 1, y    , 1).tileid == 13) { riverCount++; }
-						if (this.get(x + 1, y    , 1).tileid == 13) { riverCount++; }
-						if (this.get(x - 1, y - 1, 1).tileid == 13) { riverCount++; }
-						if (this.get(x    , y - 1, 1).tileid == 13) { riverCount++; }
-						if (this.get(x + 1, y - 1, 1).tileid == 13) { riverCount++; }
-						if (this.get(x - 1, y + 1, 1).tileid == 13) { riverCount++; }
-						if (this.get(x    , y + 1, 1).tileid == 13) { riverCount++; }
-						if (this.get(x + 1, y + 1, 1).tileid == 13) { riverCount++; }
+						if (this.get(x - 1, y    , 1).tileid == river) { riverCount++; }
+						if (this.get(x + 1, y    , 1).tileid == river) { riverCount++; }
+						if (this.get(x - 1, y - 1, 1).tileid == river) { riverCount++; }
+						if (this.get(x    , y - 1, 1).tileid == river) { riverCount++; }
+						if (this.get(x + 1, y - 1, 1).tileid == river) { riverCount++; }
+						if (this.get(x - 1, y + 1, 1).tileid == river) { riverCount++; }
+						if (this.get(x    , y + 1, 1).tileid == river) { riverCount++; }
+						if (this.get(x + 1, y + 1, 1).tileid == river) { riverCount++; }
 
 						if (
-							(this.get(x, y, 1).tileid == 6
-							|| this.get(x, y, 1).tileid == 5)
+							(this.get(x, y, 2).tileid == hills
+							|| this.get(x, y, 2).tileid == mountains)
 							&& seaCount == 0
 							&& riverCount == 0
 							)
@@ -602,7 +533,7 @@
 					maxChecks = 5000;
 					while(!complete && maxChecks > 0)
 					{
-						this.set(x, y, 13, 1);
+						this.set(x, y, river, 1);
 						var tile = this.get(x, y, 0);
 						var left = this.get(x - 1, y, 0);
 						var right = this.get(x + 1, y, 0);
@@ -619,25 +550,25 @@
 							return a - b;
 						});
 
-						if (left.height == heights[0] && this.get(x - 1, y, 1).tileid != 13)
+						if (left.height == heights[0] && this.get(x - 1, y, 1).tileid != river)
 						{
 							x--;
 							dx = -1;
 							dy = 0;
 						}
-						else if (up.height == heights[0] && this.get(x, y - 1, 1).tileid != 13)
+						else if (up.height == heights[0] && this.get(x, y - 1, 1).tileid != river)
 						{
 							y--;
 							dy = -1;
 							dx = 0;
 						}
-						else if (down.height == heights[0] && this.get(x, y + 1, 1).tileid != 13)
+						else if (down.height == heights[0] && this.get(x, y + 1, 1).tileid != river)
 						{
 							y++;
 							dy = 1;
 							dx = 0;
 						}
-						else if (right.height == heights[0] && this.get(x + 1, y, 1).tileid != 13)
+						else if (right.height == heights[0] && this.get(x + 1, y, 1).tileid != river)
 						{
 							x++;
 							dx = 1;
@@ -759,9 +690,9 @@
 				var tile = this.get(x, y, 0);
 				var tile1 = this.get(x, y, 1);
 				var tile2 = this.get(x, y, 2);
-				var f = parseInt(this.tset.tiledefs.contentJSON[tile.tileid].fertility)
-					+ parseInt(this.tset.tiledefs.contentJSON[tile1.tileid].fertility)
-					+ parseInt(this.tset.tiledefs.contentJSON[tile2.tileid].fertility);
+				var f = parseInt(this.tset.getTile(tile.tileid).fertility)
+					+ parseInt(this.tset.getTile(tile1.tileid).fertility)
+					+ parseInt(this.tset.getTile(tile2.tileid).fertility);
 				return f;
 			}
 			,clear: function()
@@ -804,6 +735,19 @@
 					return t;
 				}
 			}
+			,factoryMapPoint: function (
+				i
+				,units				// Units on the point.
+				,v				// closest voronoi point (IE: which region the point belongs to)
+				,h				// Altitude of the point.
+				,objects			// Objects such as cities, plantations, fortifications, etc.
+				,discovered			// Whether or not it's covered by Fog of War
+				,moisture			// Moisture content of the point.
+				,owner				// Whether or not the point is owned by a nation.
+			)
+			{
+				return {"tileid": i, "units": units, "voronoi": v, "height": h, "objects": objects, "discovered": discovered, "moisture": moisture, "owner": owner};
+			}
 			,set: function (x, y, i, l)
 			{
 				if (l == undefined) { l = 0; }
@@ -816,12 +760,18 @@
 				var moisture = this.tiles[l][y][x].moisture;
 				var h = this.tiles[l][y][x].height; 
 				var v = this.tiles[l][y][x].voronoi;
-				row.push({"tileid": i, "units": units, "voronoi": v, "height": h, "objects": objects, "discovered": discovered, "moisture": moisture});
+				var owner = this.tiles[l][y][x].owner;
+				//{"tileid": i, "units": units, "voronoi": v, "height": h, "objects": objects, "discovered": discovered, "moisture": moisture, "owner": owner}
+				row.push(this.factoryMapPoint(i, units, v, h, objects, discovered, moisture, owner));
 				row.push.apply(row, this.tiles[l][y].slice(x + 1));
 				this.tiles[l][y] = row;
 			}
-			,setObject: function (x, y, obj)
+			,setOwner: function (x, y, owner)
 			{
+				if (owner == undefined)
+				{
+					owner = -1;
+				}
 				var l=0;
 				if (this.tiles[l] == undefined) { return; }
 				if (this.tiles[l][y] == undefined) { return; }
@@ -830,12 +780,37 @@
 				var units = this.tiles[l][y][x].units;
 				if (units == undefined) { return; }
 				var objects = this.tiles[l][y][x].objects;
-				objects.push(obj);
 				var discovered = this.tiles[l][y][x].discovered;
 				var moisture = this.tiles[l][y][x].moisture;
 				var h = this.tiles[l][y][x].height;
 				var v = this.tiles[l][y][x].voronoi;
-				row.push({"tileid": i, "units": units, "voronoi": v, "height": h, "objects": objects, "discovered": discovered, "moisture": moisture});
+				row.push(this.factoryMapPoint(i, units, v, h, objects, discovered, moisture, owner));
+				row.push.apply(row, this.tiles[l][y].slice(x + 1));
+				this.tiles[l][y] = row;	
+			}
+			,setObject: function (x, y, obj)
+			{
+				if (obj == undefined)
+				{
+					//alert(obj);
+					return;
+				}
+				var l=0;
+				if (this.tiles[l] == undefined) { return; }
+				if (this.tiles[l][y] == undefined) { return; }
+				var row = this.tiles[l][y].slice(0, x);
+				var i = this.tiles[l][y][x].tileid;
+				var units = this.tiles[l][y][x].units;
+				if (units == undefined) { return; }
+				this.tiles[l][y][x].objects = obj;
+				var objects = jQuery.extend(true, {}, obj);
+				// objects.push(obj); // Use this assignment for addObject
+				var discovered = this.tiles[l][y][x].discovered;
+				var moisture = this.tiles[l][y][x].moisture;
+				var h = this.tiles[l][y][x].height;
+				var v = this.tiles[l][y][x].voronoi;
+				var owner = this.tiles[l][y][x].owner;
+				row.push(this.factoryMapPoint(i, units, v, h, objects, discovered, moisture, owner));
 				row.push.apply(row, this.tiles[l][y].slice(x + 1));
 				this.tiles[l][y] = row;	
 			}
@@ -852,7 +827,8 @@
 				var discovered = this.tiles[l][y][x].discovered;
 				var moisture = this.tiles[l][y][x].moisture;
 				var h = this.tiles[l][y][x].height;
-				row.push({"tileid": i, "units": units, "voronoi": v, "height": h, "objects": objects, "discovered": discovered, "moisture": moisture});
+				var owner = this.tiles[l][y][x].owner;
+				row.push(this.factoryMapPoint(i, units, v, h, objects, discovered, moisture, owner));
 				row.push.apply(row, this.tiles[l][y].slice(x + 1));
 				this.tiles[l][y] = row;	
 			}
@@ -869,7 +845,8 @@
 				var discovered = this.tiles[l][y][x].discovered;
 				var v = this.tiles[l][y][x].voronoi;
 				var h = this.tiles[l][y][x].height;
-				row.push({"tileid": i, "units": units, "voronoi": v, "height": h, "objects": objects, "discovered": discovered, "moisture": m});
+				var owner = this.tiles[l][y][x].owner;
+				row.push({"tileid": i, "units": units, "voronoi": v, "height": h, "objects": objects, "discovered": discovered, "moisture": m, "owner": owner});
 				row.push.apply(row, this.tiles[l][y].slice(x + 1));
 				this.tiles[l][y] = row;	
 			}
@@ -887,7 +864,8 @@
 				var discovered = this.tiles[l][y][x].discovered;
 				var moisture = this.tiles[l][y][x].moisture;
 				var v = this.tiles[l][y][x].voronoi;
-				row.push({"tileid": i, "units": units, "voronoi": v, "height": h, "objects": objects, "discovered": discovered, "moisture": moisture});
+				var owner = this.tiles[l][y][x].owner;
+				row.push(this.factoryMapPoint(i, units, v, h, objects, discovered, moisture, owner));
 				row.push.apply(row, this.tiles[l][y].slice(x + 1));
 				this.tiles[l][y] = row;	
 			}
@@ -910,7 +888,8 @@
 				var v = this.tiles[l][y][x].voronoi;
 				var moisture = this.tiles[l][y][x].moisture;
 				var h = this.tiles[l][y][x].height;
-				row.push({"tileid": i, "units": units, "voronoi": v, "height": h, "objects": objects, "discovered": discovered, "moisture": moisture});
+				var owner = this.tiles[l][y][x].owner;
+				row.push(this.factoryMapPoint(i, units, v, h, objects, discovered, moisture, owner));
 				row.push.apply(row, this.tiles[l][y].slice(x + 1));
 				this.tiles[l][y] = row;
 			}
@@ -933,7 +912,8 @@
 				var v = this.tiles[l][y][x].voronoi;
 				var moisture = this.tiles[l][y][x].moisture;
 				var h = this.tiles[l][y][x].height;
-				row.push({"tileid": i, "units": units, "voronoi": v, "height": h, "objects": objects, "discovered": discovered, "moisture": moisture});
+				var owner = this.tiles[l][y][x].owner;
+				row.push(this.factoryMapPoint(i, units, v, h, objects, discovered, moisture, owner));
 				row.push.apply(row, this.tiles[l][y].slice(x + 1));
 				this.tiles[l][y] = row;
 			}
@@ -956,6 +936,19 @@
 						if (voronoiID == this.get(i, k, 0).voronoi)
 						{
 							this.setDiscovered(i, k, playerID);
+						}
+					}
+				}
+			}
+			,setRegionOwner: function(playerID, voronoiID)
+			{
+				for (var k=0; k<this.mapwidth; k++)
+				{
+					for (var i=0; i<this.mapheight; i++)
+					{
+						if (voronoiID == this.get(i, k, 0).voronoi)
+						{
+							this.setOwner(i, k, playerID);
 						}
 					}
 				}
@@ -983,6 +976,22 @@
 					for (var i = x1; i < x2; i++)
 					{
 						this.setDiscovered(i, k, ownerID);
+					}
+				}
+			}
+			,obscureTile: function(x, y, unit)
+			{
+				var unitRange = unit.range;
+				var ownerID = unit.ownerID;
+				var x1 = x - unitRange;
+				var y1 = y - unitRange;
+				var x2 = x + 1 + unitRange;
+				var y2 = y + 1 + unitRange;
+				for (var k = y1; k < y2; k++)
+				{
+					for (var i = x1; i < x2; i++)
+					{
+						this.setObscured(i, k, ownerID);
 					}
 				}
 			}
@@ -1103,9 +1112,9 @@
 									{
 										for (var i = 0; i < objects.length; i++)
 										{
-											if (objects[i].type == 'Settlement'
-												|| objects[i].type == 'Outpost'
-												|| objects[i].type == 'Town')
+											if (objects[i].type == 'Town'
+												|| objects[i].type == 'City'
+												|| objects[i].type == 'Metropolis')
 											{
 												retval.push(objects[0]);
 											}
@@ -1127,30 +1136,36 @@
 				}
 				else
 				{
-					var objects = this.tiles[l][y][x].objects;
-					if (objects == undefined)
+					if (this.tiles[l][y] != undefined)
 					{
-						return false;
-					}
-					else
-					{				
-						if (objects.length > 0)
+						if (this.tiles[l][y][x] != undefined)
 						{
-							for (var i = 0; i < objects.length; i++)
+							var objects = this.tiles[l][y][x].objects;
+							if (objects == undefined)
 							{
-								if (objects[i].type == 'Settlement'
-									|| objects[i].type == 'Outpost'
-									|| objects[i].type == 'Town')
+								return false;
+							}
+							else
+							{				
+								if (objects.length > 0)
 								{
-									return objects[0];
+									for (var i = 0; i < objects.length; i++)
+									{
+										if (objects[i].type == 'Town'
+											|| objects[i].type == 'City'
+											|| objects[i].type == 'Metropolis')
+										{
+											return objects[0];
+										}
+									}
 								}
+								else
+								{
+									return false;
+								}
+								return false;
 							}
 						}
-						else
-						{
-							return false;
-						}
-						return false;
 					}
 				}
 				
@@ -1214,6 +1229,7 @@
 							unit.moving = false;
 						}
 						newUnit = jQuery.extend(true, {}, unit);
+						this.obscureTile(x, y, unit);
 						newUnit.move(toX, toY);
 						this.addUnit(toX, toY, newUnit);
 						this.removeUnit(x, y, unit);
@@ -1221,6 +1237,9 @@
 						return newUnit;
 					}
 				}
+				// TODO: Iterate through the cities owned by that ownerID exploring each tile within that city's range
+				// probably need to implement a condition on the explore/obscureTile methods to check if it's a city or unit type
+				// and explore tiles appropriately (according to city's range. Probably larger ctiies have larger visible range);
 				return unit;
 			}
 		});
@@ -1265,8 +1284,9 @@
 				}
 			}
 		});
-		var ModelUnit = Backbone.Model.extend({
-			name: "Unit"
+		
+		var ModelUnitCitizen = Backbone.Model.extend({
+			/*name: "Unit"
 			,url: ""
 			,ownerID: 0
 			,citizen: undefined
@@ -1291,15 +1311,15 @@
 			,maxhealth: 100
 			,spriteset: undefined
 			,moving: true
-			,bonusunitIDs: []
-			,doAI: function ()
+			,bonusunitIDs: []*/
+			doAI: function ()
 			{
 				// Default AI Function
 				if (this.abilities.settle && this.move_points > 0)
 				{
 					var tile = map.mapdata.get(this.x, this.y, 0);
 
-					var fertility = map.tset.tiledefs.contentJSON[tile.tileid].fertility;
+					var fertility = map.tset.getTile(tile.tileid).fertility;
 					// If the settler is standing on a fertile tile, go ahead and settle,
 					// otherwise pick the most promising direction and move.
 					if (fertility > 0)
@@ -1427,77 +1447,42 @@
 			}
 			,initialize: function (arg)
 			{
-				if (arg.citizen != undefined)
-				{
-					this.citizen = arg.citizen;
-				}
-				if (arg.name != undefined)
-				{
-					this.name = arg.name;
-				}
-				if (arg.moves != undefined)
-				{
-					this.move_points = arg.moves;
-					this.move_max = arg.moves;
-				}
-				if (arg.attack != undefined)
-				{
-					this.attack = arg.attack;
-				}
-				if (arg.defense != undefined)
-				{
-					this.defense = arg.defense;
-				}
-				if (arg.range != undefined)
-				{
-					this.range = arg.range;
-				}
-				if (arg.health != undefined)
-				{
-					this.health = arg.health;
-					this.maxhealth = arg.health;
-				}
-				if (arg.bonusunitIDs != undefined)
-				{
-					this.bonusunitIDs = arg.bonusunitIDs;
-				}
-				if (arg.excludetileIDs != undefined)
-				{
-					this.excludetileIDs = arg.excludetileIDs;
-				}
-				if (arg.cost != undefined)
-				{
-					this.cost = arg.cost;
-				}
-				if (arg.costitemIDs != undefined)
-				{
-					this.costitemIDs = arg.costitemIDs;
-				}
-				if (arg.costpopulation != undefined)
-				{
-					this.costpopulation = arg.costpopulation;
-				}
-				if (arg.spriteset != undefined)
-				{
-					this.spriteset = arg.spriteset;
-				}
-				else
-				{
-					//this.spriteset = new Spriteset({spriteimage: arg.spriteimage, spritedefs: arg.spritedefs});
-					alert("Critical Error! Unit Spriteset not defined");
-				}
-				if (arg.abilities != undefined)
-				{
-					this.abilities = arg.abilities;
-				}
-				if (arg.name != undefined)
-				{
-					this.name = arg.name;
-				}
-				if (arg.ownerID != undefined)
-				{
-					this.ownerID = arg.ownerID;
-				}
+				this.citizen = [];
+				this.move_points = 3;
+				this.move_max = 3;
+				this.attack = 0;
+				this.defense = 1;
+				this.range = 2;
+				this.health = 5;
+				this.maxhealth = 5;
+				this.bonusunitIDs = [];
+				this.excludetileIDs = [0];
+				this.costpopulation = 1;
+				this.name = "Citizen";
+				this.type = "Citizen";
+				this.spriteset = new Spriteset({"url": "images/units.png", "spritedefs": [
+							{name: "Unit", frames: [
+									{x: 256, y: 896, w: 64, h: 64}
+								]
+							}
+						]
+					});
+					
+				this.moves = 5;
+				this.health = 5;
+				this.attack = 0;
+				this.range = 2;
+				this.defense = 1;
+				this.bonusunitIDs = [];
+				this.excludetileIDs = [0];
+				this.cost = 10;
+				this.costitemIDs = [];
+				this.costpopulation = 1;
+				this.buildCost = 10;
+				this.abilities = {
+					"settle": true
+				};
+				this.ownerID = arg.ownerID;
 			}
 			,update: function()
 			{
@@ -1526,6 +1511,246 @@
 			}
 		});
 		
+		var ModelUnitEngineer = ModelUnitCitizen.extend({
+			initialize: function (arg)
+			{
+				this.citizen = [];
+				this.move_points = 3;
+				this.move_max = 3;
+				this.attack = 0;
+				this.defense = 1;
+				this.range = 2;
+				this.health = 5;
+				this.maxhealth = 5;
+				this.bonusunitIDs = [];
+				this.excludetileIDs = [0];
+				this.costpopulation = 1;
+				this.name = "Engineer";
+				this.type = "Engineer";
+				this.spriteset = new Spriteset({"url": "images/units.png", "spritedefs": [
+							{name: "Unit", frames: [
+									{x: 256, y: 768, w: 64, h: 64}
+								]
+							}
+						]
+					});
+					
+				this.moves = 5;
+				this.health = 5;
+				this.attack = 0;
+				this.range = 2;
+				this.defense = 1;
+				this.bonusunitIDs = [];
+				this.excludetileIDs = [0];
+				this.cost = 10;
+				this.costitemIDs = [];
+				this.costpopulation = 1;
+				this.buildCost = 10;
+				this.abilities = {
+					"settle": false
+					,"plow": true
+				};
+				this.ownerID = arg.ownerID;
+			}
+		});
+
+		
+		var ModelUnitEngineer = ModelUnitCitizen.extend({
+			initialize: function (arg)
+			{
+				this.citizen = [];
+				this.move_points = 3;
+				this.move_max = 3;
+				this.attack = 0;
+				this.defense = 1;
+				this.range = 2;
+				this.health = 5;
+				this.maxhealth = 5;
+				this.bonusunitIDs = [];
+				this.excludetileIDs = [0];
+				this.costpopulation = 1;
+				this.name = "Engineer";
+				this.type = "Engineer";
+				this.spriteset = new Spriteset({"url": "images/units.png", "spritedefs": [
+							{name: "Unit", frames: [
+									{x: 256, y: 768, w: 64, h: 64}
+								]
+							}
+						]
+					});
+
+				this.health = 5;
+				this.bonusunitIDs = [];
+				this.excludetileIDs = [0];
+				this.costitemIDs = [];
+				this.costpopulation = 1;
+				this.buildCost = 10;
+				
+				this.abilities = {
+					"settle": false
+					,"plow": true
+				};
+				this.ownerID = arg.ownerID;
+			}
+		});
+		
+		
+		var ModelUnitRiflemen = ModelUnitCitizen.extend({
+			initialize: function (arg)
+			{
+				this.citizen = [];
+				this.move_points = 3;
+				this.move_max = 3;
+				this.attack = 2;
+				this.defense = 4;
+				this.range = 2;
+				this.health = 5;
+				this.maxhealth = 5;
+				this.bonusunitIDs = [];
+				this.excludetileIDs = [0];
+				this.costpopulation = 1;
+				this.name = "Riflemen";
+				this.type = "Riflemen";
+				this.spriteset = new Spriteset({"url": "images/units.png", "spritedefs": [
+							{name: "Unit", frames: [
+									{x: 256, y: 640, w: 64, h: 64}
+								]
+							}
+						]
+					});
+					
+				this.health = 5;
+				this.bonusunitIDs = [];
+				this.excludetileIDs = [0];
+				this.costitemIDs = [];
+				this.costpopulation = 1;
+				this.buildCost = 10;
+
+				this.abilities = {
+					"settle": false
+					,"plow": false
+				};
+				this.ownerID = arg.ownerID;
+			}
+		});
+
+		var ModelUnitMechanizedInfantry = ModelUnitCitizen.extend({
+			initialize: function (arg)
+			{
+				this.citizen = [];
+				this.move_points = 3;
+				this.move_max = 3;
+				this.attack = 2;
+				this.defense = 4;
+				this.range = 2;
+				this.health = 5;
+				this.maxhealth = 5;
+				this.bonusunitIDs = [];
+				this.excludetileIDs = [0];
+				this.costpopulation = 1;
+				this.name = "Mechanized Infantry";
+				this.type = "Mechanized Infantry";
+				this.spriteset = new Spriteset({"url": "images/units.png", "spritedefs": [
+							{name: "Unit", frames: [
+									{x: 0, y: 64, w: 64, h: 64}
+								]
+							}
+						]
+					});
+					
+				this.health = 5;
+				this.bonusunitIDs = [];
+				this.excludetileIDs = [0];
+				this.costitemIDs = [];
+				this.costpopulation = 1;
+				this.buildCost = 10;
+
+				this.abilities = {
+					"settle": false
+					,"plow": false
+				};
+				this.ownerID = arg.ownerID;
+			}
+		});
+
+		var ModelUnitTank = ModelUnitCitizen.extend({
+			initialize: function (arg)
+			{
+				this.citizen = [];
+				this.move_points = 3;
+				this.move_max = 3;
+				this.attack = 2;
+				this.defense = 4;
+				this.range = 2;
+				this.health = 5;
+				this.maxhealth = 5;
+				this.bonusunitIDs = [];
+				this.excludetileIDs = [0];
+				this.costpopulation = 1;
+				this.name = "Tank";
+				this.type = "Tank";
+				this.spriteset = new Spriteset({"url": "images/units.png", "spritedefs": [
+							{name: "Unit", frames: [
+									{x: 0, y: 0, w: 64, h: 64}
+								]
+							}
+						]
+					});
+					
+				this.health = 5;
+				this.bonusunitIDs = [];
+				this.excludetileIDs = [0];
+				this.costitemIDs = [];
+				this.costpopulation = 1;
+				this.buildCost = 10;
+
+				this.abilities = {
+					"settle": false
+					,"plow": false
+				};
+				this.ownerID = arg.ownerID;
+			}
+		});
+
+		var ModelUnitArtillery = ModelUnitCitizen.extend({
+			initialize: function (arg)
+			{
+				this.citizen = [];
+				this.move_points = 3;
+				this.move_max = 3;
+				this.attack = 2;
+				this.defense = 4;
+				this.range = 2;
+				this.health = 5;
+				this.maxhealth = 5;
+				this.bonusunitIDs = [];
+				this.excludetileIDs = [0];
+				this.costpopulation = 1;
+				this.name = "Artillery";
+				this.type = "Artillery";
+				this.spriteset = new Spriteset({"url": "images/units.png", "spritedefs": [
+							{name: "Unit", frames: [
+									{x: 64, y: 0, w: 64, h: 64}
+								]
+							}
+						]
+					});
+					
+				this.health = 5;
+				this.bonusunitIDs = [];
+				this.excludetileIDs = [0];
+				this.costitemIDs = [];
+				this.costpopulation = 1;
+				this.buildCost = 10;
+
+				this.abilities = {
+					"settle": false
+					,"plow": false
+				};
+				this.ownerID = arg.ownerID;
+			}
+		});
+
 // ***************** Item Definitions *****************		
 
 		var ModelItem = Backbone.Model.extend({
@@ -2119,31 +2344,21 @@
 // **** Populate Global Item List *************************
 
 itemlist = {
-	'Wheat': new ModelWheat({})
-	,'Rice': new ModelRice({})
-	,'Corn': new ModelCorn({})
-	,'Mutton': new ModelMutton({})
-	,'Beef': new ModelBeef({})
-	,'Apple': new ModelApple({})
-	,'Orange': new ModelOrange({})
-	,'Cherry': new ModelCherry({})
-	,'Grape': new ModelGrape({})
-	,'Pear': new ModelPear({})
-	,'Olive': new ModelOlive({})
-	,'Rawhide': new ModelRawhide({})
-	,'Leather': new ModelLeather({})
-	,'Iron Ore': new ModelIronOre({})
-	,'Iron Ingot': new ModelIronIngot({})
-	,'Iron Spear': new ModelIronSpear({})
-	,'Iron Sword': new ModelIronSword({})
-	,'Iron Halberd': new ModelIronHalberd({})
-	,'Iron Helm': new ModelIronHelm({})
-	,'Iron Mail': new ModelIronMail({})
-	,'Iron Platemail': new ModelIronPlatemail({})
-	,'Iron Shield': new ModelIronShield({})
-	,'Leather Shield': new ModelLeatherShield({})
-	,'Leather Sling': new ModelLeatherSling({})
+
+	"Aluminium Ore": undefined
+	,"Iron Ore": undefined
+	,"Coal": undefined
+	,"Food": undefined
+	,"Rubber": undefined
+	,"Oil": undefined
+
+	,"Aluminium": undefined
+	,"Supplies": undefined
+	,"Steel": undefined
+	
+	,"Arms": undefined
 };
+
 function itemFactory(itemname)
 {
 	switch(itemname)
@@ -2299,16 +2514,15 @@ function itemListFood()
 // ******************************************************		
 		
 		var ModelBuilding = Backbone.Model.extend({
-			name: "Plantation"
-			,url: ""
-			,typeid: 0	// Plantation/Mine/etc. Basically, raw materials.
-			,buildCost: undefined
-			,produces: undefined
-			,consumes: []
-			,citizens: []
-			,city: undefined
-			,initialize: function(args)
+			initialize: function(args)
 			{
+				this.city = undefined;
+				this.produces = undefined;
+				this.consumes = [];
+				this.typeid = 0;
+				this.buildCost = undefined;
+				this.name = "Plantation";
+				this.citizens = [];
 				if (args.name != undefined)
 				{
 					this.name = args.name;
@@ -2337,16 +2551,137 @@ function itemListFood()
 					if (this.produces != undefined)
 					{
 						this.city.inventory.addItem(this.produces);
-						console.log("Building " + this.name + " sending 1 " + this.produces + " to " + this.city.name);
 					}
 				}
 			}
 		});
 		
+		var ModelStructure = Backbone.Model.extend({
+			initialize: function(args)
+			{
+				this.city = city;
+				this.name = "City Structure";
+				this.buildCost = 50;
+				this.citizens = [];
+				this.buildable = true;
+			}
+			,build: function ()
+			{
+				if (this.city == undefined)
+				{
+					return;
+				}
+			}
+			,destroy: function ()
+			{
+				if (this.city == undefined)
+				{
+					return;
+				}
+			}
+			,newTurn: function ()
+			{
+				if (this.city == undefined)
+				{
+					return;
+				}
+			}
+		});
+		
+		var ModelFactory = ModelStructure.extend({
+			initialize: function(args)
+			{
+				this.city = args.city;
+				this.name = "Factory";
+				this.buildCost = 50;
+				this.citizens = [];
+				this.buildable = true;
+			}
+			,build: function()
+			{
+				// Increase the city's manufacturing points.
+				this.city.manufacturing += 5;
+			}
+			,destroy: function()
+			{
+				// Decrease the city's manufacturing points.
+				this.city.manufacturing -= 5;
+			}
+		});
+		
+		var ModelWealth = ModelStructure.extend({
+			initialize: function(args)
+			{
+				this.city = args.city;
+				if (args.buildCost != undefined)
+				{
+					this.buildCost = args.buildCost;
+				}
+				else
+				{
+					this.buildCost = 0;
+				}
+				if (args.name != undefined)
+				{
+					this.name = args.name;
+				}
+				this.citizens = [];
+				this.buildable = false;
+			}
+			,build: function()
+			{
+				// Increase the city's manufacturing points.
+				
+				// TODO: add the manufacturing points to the nation's treasury
+				console.log("Nation " + map.nations[this.city.ownerID].name + " added " + this.city.manufacturing + " to its treasury.");
+			}
+			,destroy: function()
+			{
+				// Decrease the city's manufacturing points.
+				this.city.manufacturing -= 5;
+			}
+		});
+		
+		var ModelStructureUnit = ModelStructure.extend({
+			initialize: function(args)
+			{
+				this.city = args.city;
+				if (args.buildCost != undefined)
+				{
+					this.buildCost = args.buildCost;
+				}
+				else
+				{
+					this.buildCost = 0;
+				}
+				if (args.name != undefined)
+				{
+					this.name = args.name;
+				}
+				this.citizens = [];
+				this.buildable = false;
+			}
+			,build: function()
+			{
+				// Increase the city's manufacturing points.
+				
+				// TODO: add the manufacturing points to the nation's treasury
+				unitFactory(map, this.city.x, this.city.y, this.name, this.city.ownerID);
+			}
+			,destroy: function()
+			{
+				// Decrease the city's manufacturing points.
+				this.city.manufacturing -= 5;
+			}
+		});		
 		
 		var ModelInventory = Backbone.Model.extend({
 			name: 'Inventory'
-			,items: {}
+			,items: undefined
+			,initialize: function(args)
+			{
+				this.items = {};
+			}
 			,count: function()
 			{
 				return items.length;
@@ -2370,19 +2705,20 @@ function itemListFood()
 		
 		
 		var ModelSettlement = Backbone.Model.extend({
-			name: "Outpost"
-			,type: "Outpost"
+			name: "Town"
+			,type: "Town"
 			,url: ""
-			,citizens: []
-			,production: undefined
-			,inventory: new ModelInventory({name: 'Outpost Inventory'})
+			,citizens: undefined
+			,production: "Wealth"
+			,inventory: undefined
 			,x: 0
 			,y: 0
-			,buildings: []
-			,units: []
+			,buildings: undefined
+			,units: undefined
 			,food: 0
 			,food_growth: 10
 			,ownerID: undefined
+			,manufacturing: 5
 			,newTurn: function ()
 			{
 				// Add food to the stockpile.
@@ -2412,15 +2748,50 @@ function itemListFood()
 					console.log(this.citizens);
 					var migrant = this.citizens.shift();
 					console.log("Expelling migrant from", this.name, migrant.type, this.ownerID);
-					var typeid = createUnit_TYPES[migrant.type];
-					var unit = createUnit(map, this.x, this.y, typeid, this.ownerID, migrant);
+					var unit = unitFactory(map, this.x, this.y, "Settler", this.ownerID, migrant);
 					console.log(unit);
 					this.food = 0;
 				}
 				
+				// Add manufacture points to the city model.
+				this.mp += this.manufacturing;
+				if (this.mp >= this.mp_max)
+				{
+					var structure = buildingFactory(this.production, this);
+					if (structure.buildable)
+					{
+						alert("Building complete!");
+					}
+					structure.build();
+					this.mp = 0;
+					this.production = "Wealth";
+					this.mp_max = 0;
+					this.buildings.push(structure);
+				}
+				
+				// TODO: run the new turn method for each city structure.
+				
 			}
 			,initialize: function (arg)
 			{
+				this.citizens = [];
+				this.production = "Wealth";
+				this.mp = 0;
+				this.mp_max = 0; // MP = manufacturing points
+				this.inventory = new ModelInventory({name: 'Town Inventory'});
+				this.x = 0;
+				this.y = 0;
+				this.buildings = [];
+				this.units = [];
+				this.food = 0;
+				this.food_growth = 10;
+				this.ownerID = undefined;
+				this.manufacturing = 5;
+
+				if (arg.manufacturing != undefined)
+				{
+					this.manufacturing = arg.manufacturing;
+				}
 				if (arg.x != undefined)
 				{
 					this.x = arg.x;
@@ -2497,6 +2868,10 @@ function itemListFood()
 			,scalex: 4
 			,scaley: 4
 			,tooltip: {x: 0, y: 0, text: ''}
+			,tile_Forest: undefined
+			,tile_Sea: undefined
+			,nations: undefined
+			,cultures: undefined
 			,initialize: function (arg)
 			{
 				this.mapdata = arg.mapdata;
@@ -2504,9 +2879,25 @@ function itemListFood()
 				this.tset = arg.tileset;
 				this.mapdata.tset = this.tset;
 				this.unitdefs = unitdefs;
+				
+				this.tile_sea = this.tset.getIndexByName("Sea");
+				this.tile_Forest = this.tset.getIndexByName("Woods");
+
+				this.nations = [];
+
+				// Insert human player for game setup.
+				this.nations.push(new NationEngland({}));
+
+				this.cultures = {
+					'English': new CultureAnglo({})
+					,'Slavic': new CultureSlavic({})
+				};
 			}
 			,draw: function ()
 			{
+				var sea = this.tile_Sea;
+				var forest = this.tile_Forest;
+				
 				var dtx; var dty;
 				if (this.el == undefined) { return; }
 				if (this.tset == undefined) { return; }
@@ -2518,6 +2909,8 @@ function itemListFood()
 				ctx.fillRect(0, 0, 800, 800);
 
 				var dx = 0; var dy = 0;
+			
+				var renderCities = [];
 			
 				var mapheight = this.mapdata.mapheight;
 				if (mapheight > 20) { mapheight = this.scrolly + 20; }
@@ -2534,137 +2927,173 @@ function itemListFood()
 							var tile = this.mapdata.get(i, k, l);
 							if (tile.discovered != undefined)
 							{
+								// Draw Tiles
+								if ((l == 0) || (l > 0 && tile.tileid > 0))
+								{
+									if ((tile.tileid != 13
+										&& tile.tileid != 4)
+										|| l != 1)
+									{
+										this.tset.drawIndex(tile.tileid, dx, dy);
+									}
+									else if (tile.tileid == 13)
+									{
+										var up		= this.mapdata.get(i, k - 1, 1);
+										var down	= this.mapdata.get(i, k + 1, 1);
+										var left	= this.mapdata.get(i - 1, k, 1);
+										var right	= this.mapdata.get(i + 1, k, 1);
+										var tid = tile.tileid;
+										
+										/*if (up.tileid != 13 && down.tileid != 13)
+										{
+											tid = 14;
+										}
+										if (left.tileid != 13 && right.tileid != 13)
+										{
+											tid = 15;
+										}
+										if (down.tileid != 13 && right.tileid != 13)
+										{
+											tid = 16;
+										}
+										if (up.tileid != 13 && right.tileid != 13)
+										{
+											tid = 17;
+										}
+										if (down.tileid != 13 && left.tileid != 13)
+										{
+											tid = 18;
+										}		
+										if (left.tileid != 13 && up.tileid != 13)
+										{
+											tid = 19;
+										}
+										if (
+											left.tileid != 13 && up.tileid != 13
+											&& down.tileid != 13
+										)
+										{
+											tid = 14
+										}																
+										if (
+											right.tileid != 13 && up.tileid != 13
+											&& down.tileid != 13
+										)
+										{
+											tid = 14
+										}
+										if (
+											left.tileid != 13 && up.tileid != 13
+											&& right.tileid != 13
+										)
+										{
+											tid = 15
+										}																
+										if (
+											right.tileid != 13 && down.tileid != 13
+											&& left.tileid != 13
+										)
+										{
+											tid = 15
+										}				*/												
+										this.tset.drawIndex(tid, dx, dy);
+									}
+									else if (tile.tileid == forest)
+									{
+										var up		= this.mapdata.get(i, k - 1, 1);
+										var down	= this.mapdata.get(i, k + 1, 1);
+										var left	= this.mapdata.get(i - 1, k, 1);
+										var right	= this.mapdata.get(i + 1, k, 1);
+										var tid = tile.tileid;
+										
+										if (up.tileid != forest && left.tileid != forest)
+										{
+											tid = forest;
+										}
+										if (up.tileid != forest && right.tileid != forest)
+										{
+											tid = forest;
+										}
+										if (left.tileid != forest && down.tileid != forest)
+										{
+											tid = forest;
+										}
+										if (right.tileid != forest && down.tileid != forest)
+										{
+											tid = forest;
+										}
+										if (right.tileid != forest && down.tileid != forest
+											&& up.tileid != forest && left.tileid != forest)
+										{
+											tid = forest;
+										}													
+										this.tset.drawIndex(tid, dx, dy);
+									}
+									var t = this.mapdata.get(i,k,0);										
+								}
+								
+								// Draw Borders
+								if (l == this.mapdata.maplayers - 1	/* && this.mapdata.get(i, k, l).discovered[0] == true*/)
+								{
+//									var borderWidth = 6;
+									var scalex = 32; var scaley = 32;
+									var west = this.mapdata.get(i - 1, k, 0); var east = this.mapdata.get(i + 1, k, 0);
+									var north = this.mapdata.get(i, k - 1, 0); var south = this.mapdata.get(i, k + 1, 0);
+									var v = this.mapdata.get(i, k, 0).voronoi;
+									if (this.mapdata.get(i, k, 0).owner > -1)
+									{
+										ctx.globalAlpha = 0.1;
+										for (var borderWidth = 1; borderWidth < 6; borderWidth++)
+										{
+											ctx.fillStyle = map.mapdata.voronoi_colours[v];
+											if (
+												west.voronoi != v
+												&& west.voronoi != undefined
+											)
+											{
+												ctx.fillRect(dx, dy, borderWidth, scaley);
+											}
+											if (
+												east.voronoi != v
+												&& east.voronoi != undefined
+											)
+											{
+												ctx.fillRect(dx + scalex - borderWidth, dy, borderWidth, scaley);
+											}
+											if (
+												south.voronoi != v
+												&& south.voronoi != undefined
+											)
+											{
+												ctx.fillRect(dx, dy + scaley - borderWidth, scalex, borderWidth);
+											}
+											if (
+												north.voronoi != v
+												&& north.voronoi != undefined
+											)
+											{
+												ctx.fillRect(dx, dy, scalex, borderWidth);
+											}
+										}
+										ctx.globalAlpha = 1.0;
+									}
+								}
+								
+								if (this.tooltip.text.length > 0
+									&& (i == this.tooltip.x	&& k == this.tooltip.y)
+								)
+								{
+									dtx = dx;
+									dty = dy;
+								}
+							}
+							if (tile)
+							{
 								if (
 									(l == 2 && tile.discovered[playerCurrent])
 									|| (l != 2)
 								)
 								{
-									// Draw Tiles
-									if ((l == 0) || (l > 0 && tile.tileid > 0))
-									{
-										if ((tile.tileid != 13
-											&& tile.tileid != 4)
-											|| l != 1)
-										{
-											this.tset.drawIndex(tile.tileid, dx, dy);
-										}
-										else if (tile.tileid == 13)
-										{
-											var up		= this.mapdata.get(i, k - 1, 1);
-											var down	= this.mapdata.get(i, k + 1, 1);
-											var left	= this.mapdata.get(i - 1, k, 1);
-											var right	= this.mapdata.get(i + 1, k, 1);
-											var tid = tile.tileid;
-											
-											if (up.tileid != 13 && down.tileid != 13)
-											{
-												tid = 14;
-											}
-											if (left.tileid != 13 && right.tileid != 13)
-											{
-												tid = 15;
-											}
-											if (down.tileid != 13 && right.tileid != 13)
-											{
-												tid = 16;
-											}
-											if (up.tileid != 13 && right.tileid != 13)
-											{
-												tid = 17;
-											}
-											if (down.tileid != 13 && left.tileid != 13)
-											{
-												tid = 18;
-											}		
-											if (left.tileid != 13 && up.tileid != 13)
-											{
-												tid = 19;
-											}
-											if (
-												left.tileid != 13 && up.tileid != 13
-												&& down.tileid != 13
-											)
-											{
-												tid = 14
-											}																
-											if (
-												right.tileid != 13 && up.tileid != 13
-												&& down.tileid != 13
-											)
-											{
-												tid = 14
-											}
-											if (
-												left.tileid != 13 && up.tileid != 13
-												&& right.tileid != 13
-											)
-											{
-												tid = 15
-											}																
-											if (
-												right.tileid != 13 && down.tileid != 13
-												&& left.tileid != 13
-											)
-											{
-												tid = 15
-											}																
-											this.tset.drawIndex(tid, dx, dy);
-										}
-										else if (tile.tileid == 4)
-										{
-											var up		= this.mapdata.get(i, k - 1, 1);
-											var down	= this.mapdata.get(i, k + 1, 1);
-											var left	= this.mapdata.get(i - 1, k, 1);
-											var right	= this.mapdata.get(i + 1, k, 1);
-											var tid = tile.tileid;
-											
-											if (up.tileid != 4 && left.tileid != 4)
-											{
-												tid = 20;
-											}
-											if (up.tileid != 4 && right.tileid != 4)
-											{
-												tid = 21;
-											}
-											if (left.tileid != 4 && down.tileid != 4)
-											{
-												tid = 22;
-											}
-											if (right.tileid != 4 && down.tileid != 4)
-											{
-												tid = 23;
-											}
-											if (right.tileid != 4 && down.tileid != 4
-												&& up.tileid != 4 && left.tileid != 4)
-											{
-												tid = 24;
-											}													
-											this.tset.drawIndex(tid, dx, dy);
-										}
-										var t = this.mapdata.get(i,k,0);										
-									}
-
-									// Draw Objects
-									if (tile.objects != undefined)
-									{
-										if (l == 2 && tile.objects.length > 0) // Rendering Object layer (layer 3)
-										{
-											for (var o=0; o < tile.objects.length; o++)
-											{
-												if (tile.objects[o].type == "settlement"
-													|| tile.objects[o].type == "town"
-													|| tile.objects[o].type == "outpost")
-												{									
-													ctx.fillStyle = "#fff";
-													ctx.strokeStyle = "#000";
-													ctx.font = "16px Arial";
-													var w = ctx.measureText(tile.objects[o].name).width;
-													ctx.strokeText(tile.objects[o].name, dx + 16 - Math.floor(w / 2), dy + 34);
-													ctx.fillText(tile.objects[o].name, dx + 16 - Math.floor(w / 2), dy + 34);
-												}
-											}
-										}
-									}
 									if (tile.units != undefined)
 									{				
 										// Draw Units
@@ -2678,68 +3107,56 @@ function itemListFood()
 											}
 										}
 									}
-									if (this.tooltip.text.length > 0
-										&& (i == this.tooltip.x	&& k == this.tooltip.y)
-									)
-									{
-										dtx = dx;
-										dty = dy;
-									}
 								}
 								else
 								{
-									this.tset.drawTile("unexplored", dx, dy);
-								}
-								if (l == this.mapdata.maplayers - 1 && this.mapdata.get(i, k, l).discovered[0] == true)
-								{
-//									var borderWidth = 6;
-									var scalex = 32; var scaley = 32;
-									var west = this.mapdata.get(i - 1, k, 0); var east = this.mapdata.get(i + 1, k, 0);
-									var north = this.mapdata.get(i, k - 1, 0); var south = this.mapdata.get(i, k + 1, 0);
-									var v = this.mapdata.get(i, k, 0).voronoi;
-									ctx.globalAlpha = 0.1;
-									for (var borderWidth = 1; borderWidth < 6; borderWidth++)
-									{
-										ctx.fillStyle = map.mapdata.voronoi_colours[v];
-										if (
-											west.voronoi != v
-											&& west.voronoi != undefined
-										)
-										{
-											ctx.fillRect(dx, dy, borderWidth, scaley);
-										}
-										if (
-											east.voronoi != v
-											&& east.voronoi != undefined
-										)
-										{
-											ctx.fillRect(dx + scalex - borderWidth, dy, borderWidth, scaley);
-										}
-										if (
-											south.voronoi != v
-											&& south.voronoi != undefined
-										)
-										{
-											ctx.fillRect(dx, dy + scaley - borderWidth, scalex, borderWidth);
-										}
-										if (
-											north.voronoi != v
-											&& north.voronoi != undefined
-										)
-										{
-											ctx.fillRect(dx, dy, scalex, borderWidth);
-										}
-									}
-									ctx.globalAlpha = 1.0;
-								}
 							
+									this.tset.drawTile("Fog of War", dx, dy);
+								}
 							}
+							
+							var city = this.mapdata.getCity(i, k, 0);
+							if (city != false)
+							{
+								if (city.type == "Town"
+									|| city.type == "City"
+									|| city.type == "Metropolis")
+								{
+									var city = {
+										'name': city.name
+										,'x': dx
+										,'y': dy
+										,'ownerID': city.ownerID
+									};
+								
+									renderCities.push(city);
+								}
+							}
+							
 
 							dx += this.tset.tileWidth();
 						}
 						dy += this.tset.tileHeight();
 						dx = 0;
 					}
+				}
+				
+				// Draw any Cities that are within the viewport
+				for (var i=0; i < renderCities.length; i++)
+				{
+					var dx = renderCities[i].x;
+					var dy = renderCities[i].y;
+					var name = renderCities[i].name;
+					var flag = this.nations[renderCities[i].ownerID].flag;
+				
+					ctx.fillStyle = "#fff";
+					ctx.strokeStyle = "#000";
+					ctx.font = "16px Arial";
+					var w = ctx.measureText(name).width;
+					ctx.strokeText(name, dx + 16 - Math.floor(w / 2), dy + 34);
+					ctx.fillText(name, dx + 16 - Math.floor(w / 2), dy + 34);
+
+					flag.draw(dx - Math.floor(w / 2) + 16, dy + 40, 16);
 				}
 				
 				// Draw Tooltip information.
@@ -2771,14 +3188,14 @@ function itemListFood()
 			
 					ctx.fillStyle = "#000";
 					ctx.font = "16px Arial";
-					var tname = this.tset.tiledefs.contentJSON[tile0.tileid].name;
+					var tname = this.tset.getTile(tile0.tileid).name; //this.tset.tiledefs.contentJSON[tile0.tileid].name;
 					if (tile1.tileid > 0)
 					{
-						tname += ", " + this.tset.tiledefs.contentJSON[tile1.tileid].name;
+						tname += ", " + this.tset.getTile(tile1.tileid).name;
 					}
 					if (tile2.tileid > 0)
 					{
-						tname += ", " + this.tset.tiledefs.contentJSON[tile2.tileid].name;
+						tname += ", " + this.tset.getTile(tile2.tileid).name;
 					}
 					ctx.fillText(tname, dtx + 5, dty + 62);
 					
@@ -2803,6 +3220,8 @@ function itemListFood()
 
 				var scalex = this.scalex;
 				var scaley = this.scaley;
+				
+				var sea = this.tset.getIndexByName("Sea");
 
 				var ctx = document.getElementById(this.el).getContext("2d");
 				this.tset.el = "#" + this.el;
@@ -2826,101 +3245,33 @@ function itemListFood()
 							var tile = this.mapdata.get(i, k, l);
 							if (tile.discovered != undefined)
 							{
-								if (
-									(l == 2 && tile.discovered[playerCurrent])
-									|| (l != 2)
-								)
+								// Draw Tiles
+								if ((l == 0) || (l > 0 && tile.tileid > 0))
 								{
-									// Draw Tiles
-									if ((l == 0) || (l > 0 && tile.tileid > 0))
+									//this.tset.drawIndex(tile.tileid, dx, dy);
+									//var t = this.mapdata.get(i,k,0);
+									var tileid = tile.tileid;
+									if (this.tset.getIndex(tileid) != undefined)
 									{
-										//this.tset.drawIndex(tile.tileid, dx, dy);
-										//var t = this.mapdata.get(i,k,0);
-										var tileid = tile.tileid;
-										if (this.tset.tiledefs.contentJSON[tileid] != undefined)
-										{
-											var colr = this.tset.tiledefs.contentJSON[tileid].colour;
-											var west = this.mapdata.get(i - 1, k, l); var east = this.mapdata.get(i + 1, k, l);
-											var north = this.mapdata.get(i, k - 1, l); var south = this.mapdata.get(i, k + 1, l);
-											var v = tile.voronoi;
-											if (west.voronoi != undefined
-												&& east.voronoi != undefined
-												&& north.voronoi != undefined
-												&& south.voronoi != undefined
-											)
-											{
-												ctx.fillStyle = colr;
-												ctx.fillRect(dx, dy, scalex, scaley);
-												if (
-													(west.voronoi != v || east.voronoi != v || north.voronoi != v || south.voronoi != v)
-													&& (west.tileid != 0 && north.tileid != 0 && east.tileid != 0 && south.tileid != 0)
-												)
-												{
-													ctx.globalAlpha = 0.6;
-													ctx.fillStyle = map.mapdata.voronoi_colours[v];
-													ctx.fillRect(dx, dy, scalex, scaley);
-													ctx.globalAlpha = 1.0;
-	//												console.log(">>", west.voronoi, north.voronoi, east.voronoi, south.voronoi);
-												}
-											}
-										}										
-									}
 
-									// Draw Objects
-									/*if (tile.objects != undefined)
-									{
-										if (l == 2 && tile.objects.length > 0) // Rendering Object layer (layer 3)
-										{
-											for (var o=0; o < tile.objects.length; o++)
-											{
-												if (tile.objects[o].type == "settlement")
-												{									
-													ctx.fillStyle = "#fff";
-													ctx.strokeStyle = "#000";
-													ctx.font = "16px Arial";
-													var w = ctx.measureText(tile.objects[o].name).width;
-													ctx.strokeText(tile.objects[o].name, dx + 16 - Math.floor(w / 2), dy + 34);
-													ctx.fillText(tile.objects[o].name, dx + 16 - Math.floor(w / 2), dy + 34);
-												}
-											}
-										}
-									}
-									if (tile.units != undefined)
-									{				
-										// Draw Units
-										tile = this.mapdata.get(i, k, 0);
-										if ((l == this.mapdata.maplayers - 1) && tile.units.length > 0)
-										{
-											for (var u=0; u < tile.units.length; u++)
-											{
-												tile.units[u].update();
-												tile.units[u].draw(dx, dy);
-											}
-										}
-									}*/
+										var colr = this.tset.getIndex(tileid).colour;
+										ctx.fillStyle = colr;
+										ctx.fillRect(dx, dy, scalex, scaley);
+										
+									}										
 								}
-								else
+								var owner = this.mapdata.get(i, k, 0).owner;
+								if (l == this.mapdata.maplayers - 1 && owner > -1)
 								{
-									this.tset.drawTile("unexplored", dx, dy);
+									var tile = this.mapdata.get(i, k, 0);
+									var tileid = tile.tileid;
+									var v = tile.voronoi;
+									ctx.globalAlpha = 0.8;
+									ctx.fillStyle = map.mapdata.voronoi_colours[v];
+									ctx.fillRect(dx, dy, scalex, scaley);
+									ctx.globalAlpha = 1.0;
 								}
 							}
-							/*							var tile = this.mapdata.get(i, k, l);
-							var tileid = tile.tileid;
-							/*if (tile.discovered != undefined)
-							{
-								if (!tile.discovered[playerCurrent] && l == 2)
-								{
-									tileid = TILE_UNEXPLORED;
-								}
-							}
-//							if (l == 2) {console.log(tileid);}
-							if (this.tset.tiledefs.contentJSON[tileid] != undefined) 
-							{if (tileid == 2) {console.log("Drawing plains!");}
-								var colr = this.tset.tiledefs.contentJSON[tileid].colour;
-								ctx.fillStyle = colr;
-								ctx.fillRect(dx, dy, scalex, scaley);
-							}*/
-							
 
 							dx+=scalex;
 							
@@ -2980,10 +3331,10 @@ function itemListFood()
 							}
 						}
 						
-						var obj = this.mapdata.getObjects(i, k);
-						if (obj.length > 0)
+						var obj = map.mapdata.getObjects(i, k);
+						if (obj != false)
 						{
-							obj[0].newTurn();
+							obj.newTurn();
 						}
 						
 						var city = this.mapdata.getCity(i, k, 0);
@@ -2996,12 +3347,17 @@ function itemListFood()
 			}
 			,settle: function (x, y, settlement)
 			{
-				var outpost = this.tset.getName("Outpost");
-				var outpostid = this.tset.getIndexByName("Outpost");
+				var outpost = this.tset.getName("Town");
+				var outpostid = this.tset.getIndexByName("Town");
 				this.mapdata.set(x, y, outpostid, outpost.layer);
 				this.mapdata.addObject(x, y, settlement, outpost.layer);
 				var ownerID = settlement.ownerID;
-				this.mapdata.exploreRegion(ownerID, this.mapdata.get(x, y, 0).voronoi);
+				if (this.mapdata.voronoi[this.mapdata.get(x, y, 0).voronoi].name == "Unnamed")
+				{
+					this.mapdata.voronoi[this.mapdata.get(x, y, 0).voronoi].name = settlement.name;
+					this.mapdata.voronoi[this.mapdata.get(x, y, 0).voronoi].city = settlement;
+				}
+				map.nations[ownerID].cities.push(settlement);
 			}
 			,addUnit: function (x, y, unit)
 			{
@@ -3025,13 +3381,7 @@ function itemListFood()
 
 
 		var ModelSpriteset = Backbone.Model.extend({
-			name: "Spriteset"
-			,url: ""
-			,image: undefined
-			,spritewidth: 32
-			,spriteheight: 32
-			,coordlist: []
-			,load: function (url)
+			load: function (url)
 			{
 				this.image = new Image();
 				if (url == undefined)
@@ -3039,6 +3389,16 @@ function itemListFood()
 					url = this.url + "?v=" + tokenx36();
 				}
 				this.image.src = url;// + "?t=" + tokenx36();
+			}
+			,initialize: function(args)
+			{
+				this.name = "Spriteset";
+				this.url = "";
+				this.image = undefined;
+				this.spritewidth = 32;
+				this.spriteheight = 32;
+				this.coordlist = args.coordlist;
+				this.load(args.url);
 			}
 			,addSprite: function (name, frames)
 			{
@@ -3053,40 +3413,14 @@ function itemListFood()
 
 		var Spriteset = Backbone.View.extend({
 			el: "#contents"
-			,framecount: 0.0
-			,increment: 1.0
-			,animname: "Walk North"
-			,animid: 0
-			,tset: undefined
-			,spritedefs: undefined
 			,initialize: function (arg)
 			{
-				this.tset = new ModelSpriteset();
-				if (arg.spriteimage != undefined)
-				{
-					this.spriteimage_file = arg.spriteimage;
-					this.tset.load(arg.spriteimage);
-				}
-				this.spritedefs = new ModelJSON();
-				if (arg.spritedefs != undefined)
-				{
-					this.loadSprites(arg.spritedefs);
-					this.spritedefs_file = arg.spritedefs;
-				}
-			}
-			,loadSprites: function (url)
-			{
-				var me = this;
-				this.spritedefs.onComplete = function ()
-					{
-						for (var i=0; i < this.contentJSON.length; i++)
-						{
-							var t = this.contentJSON[i]; 
-							var sprite = jQuery.extend(true, {}, t);
-							me.tset.addSprite(sprite.name, sprite.frames);
-						}
-					}
-				this.spritedefs.load(url + "?t=" + tokenx36());
+				this.spritedefs = arg.spritedefs;
+				this.tset = new ModelSpriteset({"coordlist": arg.spritedefs, "url": arg.url});
+				this.framecount = 0.0;
+				this.increment = 1.0;
+				this.animname = "Unit";
+				this.animid = 0;
 			}
 			,getSprite: function (i)
 			{
@@ -3098,9 +3432,9 @@ function itemListFood()
 			}
 			,setAnimation: function (name)
 			{
-				for (var i=0; i<this.spritedefs.contentJSON.length; i++)
+				for (var i=0; i<this.spritedefs.length; i++)
 				{
-					if (this.spritedefs.contentJSON[i].name == name)
+					if (this.spritedefs[i].name == name)
 					{
 						this.animname = name;
 						this.animid = i;
@@ -3111,9 +3445,9 @@ function itemListFood()
 			}
 			,setAnimationID: function (id)
 			{
-				if (this.spritedefs.contentJSON[id] != undefined)
+				if (this.spritedefs[id] != undefined)
 				{
-					this.animname = this.spritedefs.contentJSON[id].name;
+					this.animname = this.spritedefs[id].name;
 					this.animid = id;
 					return true;
 				}
@@ -3123,14 +3457,10 @@ function itemListFood()
 			{
 				return this.tset.getIndexByName(name);
 			}
-			,load: function (url)
-			{
-				this.tset.load(url);
-			}
 			,draw: function (x, y)
 			{
 				var frame = this.tset.getSprite(this.animid).frames; 
-				if (frame != false)
+				if (frame != false && frame != undefined)
 				{
 					if (this.tset.image != undefined)
 					{
@@ -3140,11 +3470,21 @@ function itemListFood()
 						var sw = frame[framecount].w;
 						var sh = frame[framecount].h;
 						var ctx = $("#contents").get(0).getContext("2d");
-						ctx.drawImage(this.tset.image, sx, sy, sw, sh, x, y, sw, sh);
+						var ofx = frame[framecount].w - 46;
+						var ofy = frame[framecount].h - 46;
+						if (ofx < 0)
+						{
+							ofx = 0;
+						}
+						if (ofy < 0)
+						{
+							ofy = 0;
+						}
+						ctx.drawImage(this.tset.image, sx, sy, sw, sh, x - ofx, y - ofy, sw, sh);
 					}
 					else
 					{
-						console.log("Sprite error", this.tset);	
+//						console.log("Sprite error", this.tset.image);	
 					}
 				}
 			}
@@ -3191,45 +3531,8 @@ function itemListFood()
 				this.tiledefs = new ModelJSON();
 				if (arg.tiledefs != undefined)
 				{
-					this.loadTiles(arg.tiledefs);
+					//this.loadTiles(arg.tiledefs);
 				}
-			}
-			,loadTiles: function (url)
-			{
-				var me = this;
-				this.tiledefs.onComplete = function ()
-					{
-						var elements = "";
-						for (var i=0; i < this.contentJSON.length; i++)
-						{
-							var t = this.contentJSON[i];
-							var tile = jQuery.extend(true, {}, t);
-							me.tset.addTile(tile.name, tile.x, tile.y, tile.layer, tile.movecost);
-							elements += "<li class='tileselection'>" + tile.name + " (" + tile.x + ", " + tile.y + ")</li>";
-						}
-						if (me.showTilebox)
-						{
-							$(me.el_tilebox).html(elements);
-							$(me.el_tilebox + " > li").css({
-								"list-style-type": "none"
-								,"display": "none"
-								,"padding-right": "5px"
-								,"cursor": "pointer"
-							});
-							$(me.el_tilebox + " > li").hover(function () {
-								$(this).css("background-color", "#ccc");
-							}
-							,function () {
-								$(this).css("background-color", "#fff");
-							});
-							$(me.el_tilebox + " > li").click(function () {
-								$(me.el_tilebox + " > li").css("color", "#000");
-								$(this).css("color", "#f00");
-								tool_tileindex = $(this).index();
-							});
-						}
-					}
-				this.tiledefs.load("tiledefs.json");
 			}
 			,tileHeight: function()
 			{
@@ -3306,6 +3609,387 @@ function itemListFood()
 			}
 		});
 
+		var FlagNeutral = Backbone.Model.extend({
+			el: "contents"
+			,initialize: function (args)
+			{
+				if (args.field != undefined)
+				{
+					this.field = args.field;
+				}
+				else
+				{
+					this.field = {
+						'colours': ['#dadada', '#fafafa', '#dadada']
+						,'vertical': true
+					};
+				}
+				if (args.symbol != undefined)
+				{
+					this.symbol = {
+						'symbol': undefined
+						,'vertical-location': 'centered'
+						,'horizontal-location': 'centered'
+					};
+				}
+				else
+				{
+					this.symbol = undefined;
+				}
+			}
+			,draw: function (x, y, width, context)
+			{
+				if (context == undefined)			
+				{
+					var ctx = document.getElementById(this.el).getContext("2d");
+				}
+				else
+				{
+					var ctx = context;
+				}
+				var colourCount = this.field.colours.length;
+				var colours = this.field.colours;
+				var height = parseInt(Math.floor(width * 0.66));
+				var barWidth = parseInt(Math.floor(width / colourCount));
+				var barHeight = parseInt(Math.floor(height / colourCount));
+				
+				var offset = 0;
+				for (var i=0; i < colourCount; i++)
+				{
+					ctx.fillStyle = colours[i];
+					if (this.field.vertical == true)
+					{
+						ctx.fillRect(x + offset, y, barWidth, height);
+						offset += barWidth;
+					}
+					else
+					{
+						ctx.fillRect(x, y + offset, width, barHeight);
+						offset += barHeight;
+					}
+				}
+			}
+		});
+		
+		var FlagFrance = Backbone.Model.extend({
+			el: "contents"
+			,initialize: function (args)
+			{
+				if (args.field != undefined)
+				{
+					this.field = args.field;
+				}
+				else
+				{
+					this.field = {
+						'colours': ['#00f', '#fff', '#f00']
+						,'vertical': true
+					};
+				}
+				if (args.symbol != undefined)
+				{
+					this.symbol = {
+						'symbol': undefined
+						,'vertical-location': 'centered'
+						,'horizontal-location': 'centered'
+					};
+				}
+				else
+				{
+					this.symbol = undefined;
+				}
+			}
+		});
+		
+		var FlagEngland = FlagNeutral.extend({
+			initialize: function (args)
+			{
+				if (args.field != undefined)
+				{
+					this.field = args.field;
+				}
+				else
+				{
+					this.field = {
+						'colours': ['#f00', '#fff']
+						,'vertical': true
+					};
+				}
+				if (args.symbol != undefined)
+				{
+					this.symbol = {
+						'symbol': undefined
+						,'vertical-location': 'centered'
+						,'horizontal-location': 'centered'
+					};
+				}
+				else
+				{
+					this.symbol = undefined;
+				}
+			}
+			,draw: function (x, y, width, context)
+			{
+				if (context == undefined)			
+				{
+					var ctx = document.getElementById(this.el).getContext("2d");
+				}
+				else
+				{
+					var ctx = context;
+				}
+								
+				var colourCount = this.field.colours.length;
+				var colours = this.field.colours;
+				var height = parseInt(Math.floor(width * 0.66));
+				var barWidth = parseInt(Math.floor(width * 0.05));
+				var barHeight = parseInt(Math.floor(height * 0.05));
+				var bwHalf = barWidth / 2;
+				var bhHalf = barHeight / 2;
+				if (bwHalf < 1)
+				{
+					bwHalf = 1;
+				}
+				if (bhHalf < 1)
+				{
+					bhHalf = 1;
+				}
 
+				ctx.fillStyle = "#f00";
+				ctx.fillRect(x, y, width, height);
+				ctx.fillStyle = "#fff";
+				ctx.fillRect(x, y, parseInt(width / 2) - bwHalf, parseInt(height / 2) - bhHalf);
+				ctx.fillRect(x + parseInt(width / 2) + bwHalf, y, parseInt(width / 2) - bwHalf, parseInt(height / 2) - bhHalf);
+				ctx.fillRect(x, y + parseInt(height / 2) + bhHalf, parseInt(width / 2) - bwHalf, parseInt(height / 2) + bhHalf);
+				ctx.fillRect(x + parseInt(width / 2) + bwHalf, y + parseInt(height / 2) + bhHalf, parseInt(width / 2) - bwHalf, parseInt(height / 2) + bhHalf);
+			}
+		});
+
+		var NationTribe = Backbone.Model.extend({
+			name: undefined
+			,description: undefined
+			,colour_primary: undefined
+			,colour_secondary: undefined
+			,initialize: function (args)
+			{
+				// Create properties from arguments or insert defaults;
+				
+				if (args.culture != undefined)
+				{
+					this.culture = new CultureLatin({});
+				}
+				else
+				{
+					this.culture = args.culture;
+				}
+				
+				if (args.flag == undefined)
+				{
+					this.flag = new FlagNeutral({});
+				}
+				else
+				{
+					this.flag = args.flag;
+				}
+				if (args.name != undefined)
+				{
+					this.name = args.name;
+				}
+				else
+				{
+					this.name = 'Anonymous Tribe';
+				}
+
+				this.description = "Anonymous tribe, they have no recorded history or any cultural achievements worthy of mention.";
+
+				// Create default properties
+				this.cities = [];
+				this.capitol = undefined;
+				this.home_voronoi = undefined;
+
+				this.units = [];
+			}
+		});
+
+		var NationEngland = NationTribe.extend({
+			initialize: function (args)
+			{
+				// Create properties from arguments or insert defaults;
+				
+				if (args.culture != undefined)
+				{
+					this.culture = new CultureLatin({});
+				}
+				else
+				{
+					this.culture = args.culture;
+				}
+				
+				if (args.flag == undefined)
+				{
+					this.flag = new FlagEngland({});
+				}
+				else
+				{
+					this.flag = args.flag;
+				}
+				if (args.name != undefined)
+				{
+					this.name = args.name;
+				}
+				else
+				{
+					this.name = 'England';
+				}
+				if (args.colour_primary != undefined)
+				{
+					this.colour_primary = args.colour_primary;
+				}
+				else
+				{
+					this.colour_primary = "#f00";
+				}
+				if (args.colour_secondary != undefined)
+				{
+					this.colour_secondary = args.colour_primary;
+				}
+				else
+				{
+					this.colour_secondary = "#f00";
+				}
+
+				this.description = "England's long history began nearly 1600 years ago when the Anglo-Saxon tribes of the German and Danish North-Sea coasts began to migrate to the abandoned Roman colony of Brittania.  They settled in the fertile southern part of the island and began to form the linguistic and cultural core of what would eventually become England.";
+				
+				// Create default properties
+				this.cities = [];
+				this.capitol = undefined;
+				this.home_voronoi = undefined;
+
+				this.units = [];
+			}
+		});
+
+		var CultureLatin = Backbone.Model.extend({
+			initialize: function (args)
+			{
+				if (args.namelist == undefined)
+				{
+					this.prefixlist = [
+								'Bru', 'Brut', 'Dom', 'Dem', 'Jul', 'Gae', 'Sev', 'August', 'Sever', 'Cat'
+								, 'Sabin', 'Sab', 'Cae', 'Cal', 'Car', 'Had', 'Hadr', 'Tarqu', 'Que', 'Quae'
+								, 'Rom', 'Romul', 'Rem', 'Vei', 'Vel', 'Val', 'Ver', "Pyr", "Epir", "Ith"
+								,"Gaul", "Illyr", "Lyc", "Xyn", "Xyd", "Deu", "Panon", "Rhod", "Dac", "Tro"
+							];
+					this.suffixlist = [
+								'ae', 'us', 'ii', 'ex', 'ix', 'a', 'as', 'ia', 'ria', 'lus', 'es', 'um', 'em'
+								,'ilius', 'lis', 'lius', 'lium', 'lirum', 'urum', 'ilis', 'irix', 'ria', 'alus'
+								,'ugus'
+							];
+
+					this.namelist = [];
+				}
+				else
+				{
+					this.namelist = args.namelist;
+				}
+			}
+			,generateList: function(maxNames)
+			{
+				if (maxNames == undefined)
+				{
+					maxNames = 50;
+				}
+				this.namelist = [];
+				var shortlist = [];
+				for (var k = 0; k < maxNames; k++)
+				{
+					var randint = getRandomInt(0, this.prefixlist.length - 1);
+					shortlist.push(this.prefixlist[randint]);
+				}
+	
+				for (var k = 0; k < shortlist.length; k++)
+				{
+					var randint = getRandomInt(0, this.suffixlist.length - 1);
+					var name = shortlist[k] + this.suffixlist[randint];
+					name = name.replace("ee", "e");
+					name = name.replace("rr", "r");
+					name = name.replace("iii", "ii");
+					this.namelist.push(name);
+				}
+			}
+		});
+
+		var CultureSlavic = CultureLatin.extend({
+			initialize: function (args)
+			{
+				if (args.namelist == undefined)
+				{
+					this.prefixlist = [
+								'Nov', 'Bel', 'Yish', 'Yak', 'Niz', 'Groz', 'Ros', 'Sib', 'Stal', 'Len'
+								,'Kir', 'Ber', 'Tat', 'Tak', 'Mos', 'Bev', 'Lev', 'Tor'
+							];
+					this.suffixlist = [
+								'ovna', 'ovnus', 'imir', 'islav', 'ovnir', 'orod', 'ora', 'iova', 'iana', 'in', 'inin'
+								,'inish', 'ivka' ,'ovka', 'irilov', 'oronov', 'iria', 'iriov', 'iriovna', 'irina', 'orow'
+								,'ow', 'imev', 'irev', 'ilev', 'orev', 'enev'
+							];
+
+					this.namelist = [];
+				}
+				else
+				{
+					this.namelist = args.namelist;
+				}
+			}
+		});
+		
+		var CultureAnglo = CultureLatin.extend({
+			initialize: function (args)
+			{
+				if (args.namelist == undefined)
+				{
+					this.prefixlist = [
+								'Abing', 'Accring', 'Acle', 'Al', 'Adle', 'Alder', 'Angle', 'Al', 'Am', 'Ash', 'Ax', 'Ayl'
+								,'Bake', 'Ban', 'Bar', 'Bas', 'Bat', 'Baw', 'Berke', 'Bex', 'Bos', 'Bil', 'Bishop', 'Black', 'Braid', 'Bran', 'Bridge', 'Brut', 'Bury', 'Bux'
+								,'Cole', 'Cor', 'Col', 'Cot', 'Craw', 'Crom', 'Croy','Cros'
+								,'Dart', 'Darl', 'Dawl', 'Don', 'Dor', 'Dove', 'Dud', 'Dun'
+								,'Eden', 'Els', 'Elm', 'Ep', 'Ex'
+								,'Fair', 'Fare', 'Farn', 'Faver', 'Fern', 'Ferry', 'Fleet', 'Flint', 'Frod'
+								,'Gain', 'Gate', 'Gare', 'Gilling', 'God', 'Grave', 'Grim', 'Guild'
+								,'Had', 'Hail', 'Hale', 'Hali', 'Har', 'Hart', 'Hen', 'Hey', 'Holt', 'Hor', 'Hunting', 'Hunt', 'Hyde'
+								,'Il', 'Ilk', 'Ip', 'Ingle', 'Ivy', 'Imming'
+								,'Jar'
+								,'Kid', 'Kim', 'Kimber', 'Kes', 'Ken', 'Kings', 'Kirk', 'Knare', 'Knut'
+								,'Lang', 'Lech', 'Leek', 'Leigh', 'Lod', 'Lough', 'Lyme'
+								,'Mable', 'Maid', 'Maiden', 'Mal', 'Malt', 'Mans', 'Mar', 'Mel', 'Mil', 'Mor'
+								,'Nail', 'Nan', 'Nel', 'New', 'Nun', 'North'
+								,'Oak', 'Oaken', 'Old', 'Ol', 'Or', 'Ot'
+								,'Pad', 'Pen', 'Pole', 'Ponte', 'Port', 'Pres', 'Prud'
+								,'Rad', 'Raw', 'Ray', 'Read', 'Red', 'Rich', 'Roch', 'Roth', 'Rush', 'Ryde', 'Rye'
+								,'Sale', 'Saf', 'Sal', 'San', 'Saw', 'Sax', 'Scar', 'Sea', 'Shef', 'Shep', 'Sher', 'Shere', 'Shrew', 'Shil', 'Sid', 'Skip', 'South', 'Stal', 'Stave', 'Steve', 'Swaf', 'Swan'
+								,'Tad', 'Tam', 'Tav', 'Tel', 'Ten', 'Tet', 'Thet', 'Thorn', 'Thrap', 'Tid', 'Tip', 'Tot', 'Tow', 'Tyne'
+								,'Uck', 'Upping', 'Up', 'Ut', 'Ux'
+								,'Wade', 'Wad', 'Wain', 'Wall', 'Wal', 'Wan', 'Ware', 'Wat', 'Welling', 'Wed', 'Wem', 'Wen', 'West', 'Wether', 'Wey', 'Whit', 'White', 'Wey', 'Wick', 'Winter', 'Wind', 'Winds', 'Wil', 'Win', 'Wood', 'Work'
+								,'Yar', 'Yate', 'Yeo'
+								
+							];
+					this.suffixlist = [
+								'don', 'ford', 'ton', 'town', 'burg', 'borough', 'burgh', 'ham', 'side', 'bourne'
+								,'hill', 'over', 'ter', 'sey', 'bury', 'bridge', 'minster', 'well', 'ing', 'ness'
+								,'dale', 'ley', 'wood', 'head', 'pool', 'rod', 'field', 'cester', 'ade', 'glade'
+								,'shire', 'von', 'set', 'folk', 'ria', 'rey', 'ex', 'ight', 'by', 'thorpe', 'church'
+								,'wich', 'chapel', 'fax'
+							];
+
+					this.namelist = [];
+				}
+				else
+				{
+					this.namelist = args.namelist;
+				}
+			}
+		});
 
 		// ********************************************************
+		
+
