@@ -823,12 +823,6 @@
 					$(this.el).find("#cityCitizens").append("<li>" + this.city.citizens[i].name + " (" + this.city.citizens[i].type + ")</li>");
 				}
 				
-				$(this.el).find("#cityInventory").empty();
-				for (var i in this.city.inventory.items)
-				{
-					$(this.el).find("#cityInventory").append("<li>" + this.city.inventory.items[i].name + " x" + this.city.inventory.items[i].qty + "</li>");
-				}
-				
 				$(this.el).find("#prodChange").unbind().click(function () {
 					me.city.production = $("#cityProduces option:selected").text();
 					var structure = buildingFactory(me.city.production, me.city);
@@ -1597,7 +1591,7 @@
 		
 		<p>
 			<b><span id='cityType'></span></b> <br/>
-			Food: <span id='cityFoodAmt'></span> / 10 <br/>
+			Food: <span id='cityFoodAmt'></span> / 50 <br/>
 			
 		</p>
 		
@@ -1627,7 +1621,7 @@
 			<b><span id='objectType'></span></b> <br/>
 			Produces: <span id='currentProduction'></span>
 			<br><span id='productionControls'><select id='objectProduces'>
-						<option>Grain Farms</option>
+						<option>Food</option>
 						<option>Cotton Plantation</option>
 						<option>Rubber Plantation</option>
 						<option>Paper Mill</option>

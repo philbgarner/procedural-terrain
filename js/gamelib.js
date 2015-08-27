@@ -2518,6 +2518,7 @@ function itemListFood()
 			{
 				this.city = undefined;
 				this.produces = undefined;
+				this.production_amount = 2;
 				this.consumes = [];
 				this.typeid = 0;
 				this.buildCost = undefined;
@@ -2550,7 +2551,17 @@ function itemListFood()
 				{
 					if (this.produces != undefined)
 					{
-						this.city.inventory.addItem(this.produces);
+						// If this is an item that can be built and placed in the city
+						// inventory, build it.
+						// If not (IE: It's food), increase the city's food stockpile.
+						if (itemFactory(this.produces))
+						{
+							this.city.inventory.addItem(this.produces);
+						}
+						else if (this.produces == "Food")
+						{
+							this.city.food += this.production_amount;
+						}
 					}
 				}
 			}
@@ -2716,14 +2727,29 @@ function itemListFood()
 			,buildings: undefined
 			,units: undefined
 			,food: 0
-			,food_growth: 10
+			,food_growth: 50
 			,ownerID: undefined
 			,manufacturing: 5
 			,newTurn: function ()
 			{
+				// Subtract food from the stockpile.
+				
+				var ct = this.citizens.length;
+				this.food -= ct;
+				
 				// Add food to the stockpile.
 				this.food += map.mapdata.fertility(this.x, this.y);
-				if (this.food > this.food_growth)
+
+				// If you have negative food, kill one of the villagers.
+				if (this.food < 0)
+				{
+					// TOOD
+					alert("Starvation");
+					this.food = 10;
+				}
+				// If the amount of food stockpiled is larger than the growth threshold, add a new citizen
+				// to the city.
+				if (this.food >= this.food_growth)
 				{
 					this.food -= this.food_growth;
 					if (this.food < 0)
@@ -2735,23 +2761,6 @@ function itemListFood()
 					this.citizens.push(ct);
 				}
 				
-				// Subtract food from the stockpile.
-				
-				var ct = this.citizens.length;
-				this.food -= ct;
-				
-				// If the town has no food left, expell the balance of citizens to become
-				// wandering settlers or labourers, depending on the citizen type.
-				
-				if (this.food < 0)
-				{
-					console.log(this.citizens);
-					var migrant = this.citizens.shift();
-					console.log("Expelling migrant from", this.name, migrant.type, this.ownerID);
-					var unit = unitFactory(map, this.x, this.y, "Citizens", this.ownerID, migrant);
-					console.log(unit);
-					this.food = 0;
-				}
 				
 				// Add manufacture points to the city model.
 				this.mp += this.manufacturing;
@@ -2784,7 +2793,7 @@ function itemListFood()
 				this.buildings = [];
 				this.units = [];
 				this.food = 0;
-				this.food_growth = 10;
+				this.food_growth = 50;
 				this.ownerID = undefined;
 				this.manufacturing = 5;
 
