@@ -65,11 +65,11 @@
 				case 'England':
 					return new NationEngland({});
 					break;
-				case 'Anonymous Tribe':
-					return new NationTribe({});
+				case 'France':
+					return new NationFrance({});
 					break;
 			}
-			return false;
+			return new NationTribe({});
 		}
 		function buildingFactory(name, city)
 		{
@@ -171,6 +171,9 @@
 				case 'Missile':
 					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 600000});
 					break;
+				case 'Transport':
+					return new ModelStructureUnit({"city": city, "name": name, "buildCost": 150000});
+					break;
 			}
 			return false;
 		}
@@ -180,12 +183,12 @@
 			var typedef = {};
 			switch(typeID)
 			{
-				case "Citizen":
+				case "Citizens":
 					typedef = new ModelUnitCitizen({
 							"ownerID": ownerID
 						});
 					break;
-				case "Engineer":
+				case "Engineers":
 					typedef = new ModelUnitEngineer({
 							"ownerID": ownerID
 						});
@@ -1250,7 +1253,7 @@
 					&& map.mapdata.voronoi[i].height > map.mapdata.sea_height
 				)
 				{
-					var u = unitFactory(map, map.mapdata.voronoi[i].x, map.mapdata.voronoi[i].y, "Citizen", placedID);
+					var u = unitFactory(map, map.mapdata.voronoi[i].x, map.mapdata.voronoi[i].y, "Citizens", placedID);
 					console.log("unitFactory Created:", map.mapdata.voronoi[i].x, map.mapdata.voronoi[i].y, u);
 					if (placedID == playerCurrent && u)
 					{
@@ -1567,13 +1570,13 @@
 						<option class="unit airplane bomber">Bomber</option>
 
 						<option class="unit naval destroyer">Destroyer</option>
-						<option class="unit naval cruiser">Cruiser</option>
+						<option class="unit naval corvette">Corvette</option>
 						<option class="unit naval battleship">Battleship</option>
 						<option class="unit naval submarine">Submarine</option>
 						<option class="unit naval transport">Transport</option>
 						
-						<option class="unit civilian Citizen">Citizen</option>
-						<option class="unit civilian engineer">Engineer</option>
+						<option class="unit civilian Citizens">Citizens</option>
+						<option class="unit civilian engineers">Engineers</option>
 					</select>
 				</span>
 			<br/>
@@ -1683,7 +1686,7 @@
 						pcount++;
 						playersMax = pcount;
 						$("#mapPlayerMax").val(pcount);
-						map.nations.push(new NationTribe({}));
+						map.nations.push(nationFactory());
 						MapGenerator.updatePlayerList();
 					}
 					

@@ -2748,7 +2748,7 @@ function itemListFood()
 					console.log(this.citizens);
 					var migrant = this.citizens.shift();
 					console.log("Expelling migrant from", this.name, migrant.type, this.ownerID);
-					var unit = unitFactory(map, this.x, this.y, "Settler", this.ownerID, migrant);
+					var unit = unitFactory(map, this.x, this.y, "Citizens", this.ownerID, migrant);
 					console.log(unit);
 					this.food = 0;
 				}
@@ -2886,7 +2886,11 @@ function itemListFood()
 				this.nations = [];
 
 				// Insert human player for game setup.
-				this.nations.push(new NationEngland({}));
+				this.nations.push(nationFactory('France'));
+
+				// Insert other major nations for AI control.
+				this.nations.push(nationFactory('England'));
+
 
 				this.cultures = {
 					'English': new CultureAnglo({})
@@ -3040,12 +3044,13 @@ function itemListFood()
 									var west = this.mapdata.get(i - 1, k, 0); var east = this.mapdata.get(i + 1, k, 0);
 									var north = this.mapdata.get(i, k - 1, 0); var south = this.mapdata.get(i, k + 1, 0);
 									var v = this.mapdata.get(i, k, 0).voronoi;
-									if (this.mapdata.get(i, k, 0).owner > -1)
+									var tileOwner = this.mapdata.get(i, k, 0).owner;
+									if (tileOwner > -1)
 									{
 										ctx.globalAlpha = 0.1;
 										for (var borderWidth = 1; borderWidth < 6; borderWidth++)
 										{
-											ctx.fillStyle = map.mapdata.voronoi_colours[v];
+											ctx.fillStyle = map.nations[tileOwner].colour_primary;
 											if (
 												west.voronoi != v
 												&& west.voronoi != undefined
@@ -3267,7 +3272,9 @@ function itemListFood()
 									var tileid = tile.tileid;
 									var v = tile.voronoi;
 									ctx.globalAlpha = 0.8;
-									ctx.fillStyle = map.mapdata.voronoi_colours[v];
+									//ctx.fillStyle = map.mapdata.voronoi_colours[v];
+									ctx.fillStyle = map.nations[owner].colour_primary;
+
 									ctx.fillRect(dx, dy, scalex, scaley);
 									ctx.globalAlpha = 1.0;
 								}
@@ -3636,6 +3643,7 @@ function itemListFood()
 				{
 					this.symbol = undefined;
 				}
+
 			}
 			,draw: function (x, y, width, context)
 			{
@@ -3671,7 +3679,7 @@ function itemListFood()
 			}
 		});
 		
-		var FlagFrance = Backbone.Model.extend({
+		var FlagFrance = FlagNeutral.extend({
 			el: "contents"
 			,initialize: function (args)
 			{
@@ -3799,7 +3807,24 @@ function itemListFood()
 				{
 					this.name = 'Anonymous Tribe';
 				}
-
+				
+				if (args.colour_primary != undefined)
+				{
+					this.colour_primary = args.colour_primary;
+				}
+				else
+				{
+					this.colour_primary = "#999";
+				}
+				if (args.colour_secondary != undefined)
+				{
+					this.colour_secondary = args.colour_primary;
+				}
+				else
+				{
+					this.colour_secondary = "#999";
+				}
+				
 				this.description = "Anonymous tribe, they have no recorded history or any cultural achievements worthy of mention.";
 
 				// Create default properties
@@ -3810,7 +3835,68 @@ function itemListFood()
 				this.units = [];
 			}
 		});
+		
+		var NationFrance = NationTribe.extend({
+			name: undefined
+			,description: undefined
+			,colour_primary: undefined
+			,colour_secondary: undefined
+			,initialize: function (args)
+			{
+				// Create properties from arguments or insert defaults;
+				
+				if (args.culture != undefined)
+				{
+					this.culture = new CultureLatin({});
+				}
+				else
+				{
+					this.culture = args.culture;
+				}
+				
+				if (args.flag == undefined)
+				{
+					this.flag = new FlagFrance({});
+				}
+				else
+				{
+					this.flag = args.flag;
+				}
+				if (args.name != undefined)
+				{
+					this.name = args.name;
+				}
+				else
+				{
+					this.name = 'France';
+				}
+				if (args.colour_primary != undefined)
+				{
+					this.colour_primary = args.colour_primary;
+				}
+				else
+				{
+					this.colour_primary = "#00f";
+				}
+				if (args.colour_secondary != undefined)
+				{
+					this.colour_secondary = args.colour_primary;
+				}
+				else
+				{
+					this.colour_secondary = "#fe0";
+				}
 
+				this.description = "France is an ancient, proud nation.";
+
+				// Create default properties
+				this.cities = [];
+				this.capitol = undefined;
+				this.home_voronoi = undefined;
+
+				this.units = [];
+			}
+		});
 		var NationEngland = NationTribe.extend({
 			initialize: function (args)
 			{
