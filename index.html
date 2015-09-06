@@ -40,7 +40,7 @@
 		
 		var unitRef = [];
 		
-		var playersMax = 1;
+		var playersMax = 2;
 		var playerCurrent = 0;
 		
 		var unitView;
@@ -564,7 +564,7 @@
 				var townname = undefined;
 				if (ownerID == 0)
 				{
-					var culture = new CultureAnglo({});
+					var culture = map.nations[ownerID].culture; //new CultureAnglo({});
 					culture.generateList();
 //console.log(											townname = prompt("Settlement Name", randomName));
 					var ni = 0;
@@ -583,7 +583,7 @@
 				citizen.push(jQuery.extend(true, {}, unit.citizen));
 				if (townname == undefined)
 				{
-					var culture = new CultureAnglo({});
+					var culture = map.nations[ownerID].culture; //new CultureAnglo({});
 					culture.generateList();
 					townname = chance.pick(culture.namelist);
 				}

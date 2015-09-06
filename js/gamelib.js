@@ -351,16 +351,48 @@
 
 				// this.regionGeoTypes();
 			}
+			,divideRegion(v, newVX, newVY)
+			{
+				var tile = this.get(this.voronoi[v].x, this.voronoi[v].y)
+			}
 			,regionGeoTypes: function()
 			{
-				for (var j=0; j < this.mapheight; j++)
+			
+				var sea = this.tset.getIndexByName("Sea");
+				var grass = this.tset.getIndexByName("Grass");
+				var river = this.tset.getIndexByName("River");
+				var desert = this.tset.getIndexByName("Desert");
+				var forest = this.tset.getIndexByName("Woods");
+				var plains = this.tset.getIndexByName("Plains");
+				
+				var regionCount = this.voronoi.length;
+				for (var k = 0; k < regionCount; k++)
 				{
-					for (var i=0; i < this.mapwidth; i++)
+					var seaCount = 0;
+					var landCount = 0;
+					var hillCount = 0;
+					var mountainCount = 0;
+					var forestCount = 0;
+					var riverCount = 0;
+					var regionSquares = 0;
+					for (var j=0; j < this.mapheight; j++)
 					{
-					
-						
-						
+						for (var i=0; i < this.mapwidth; i++)
+						{
+							if (this.get(i, j, 0).voronoi == k)
+							{
+								regionSquares++
+								if (this.get(i, j, 0).tileid == sea) { seaCount++; }
+							}
+						}
 					}
+					// Set the region type according to the relative ratios of the squares in that region.
+					
+					if (seaCount / regionSquares > 0.9)
+					{
+						// Sea
+					}
+					
 				}
 			}
 			,evolveBiomes: function()
@@ -3791,14 +3823,7 @@ function itemListFood()
 			{
 				// Create properties from arguments or insert defaults;
 				
-				if (args.culture != undefined)
-				{
-					this.culture = new CultureLatin({});
-				}
-				else
-				{
-					this.culture = args.culture;
-				}
+				this.culture = new CultureLatin({});
 				
 				if (args.flag == undefined)
 				{
@@ -3854,14 +3879,7 @@ function itemListFood()
 			{
 				// Create properties from arguments or insert defaults;
 				
-				if (args.culture != undefined)
-				{
-					this.culture = new CultureLatin({});
-				}
-				else
-				{
-					this.culture = args.culture;
-				}
+				this.culture = new CultureFranco({});
 				
 				if (args.flag == undefined)
 				{
@@ -3911,14 +3929,7 @@ function itemListFood()
 			{
 				// Create properties from arguments or insert defaults;
 				
-				if (args.culture != undefined)
-				{
-					this.culture = new CultureLatin({});
-				}
-				else
-				{
-					this.culture = args.culture;
-				}
+				this.culture = new CultureAnglo({});
 				
 				if (args.flag == undefined)
 				{
@@ -4074,6 +4085,28 @@ function itemListFood()
 								,'dale', 'ley', 'wood', 'head', 'pool', 'rod', 'field', 'cester', 'ade', 'glade'
 								,'shire', 'von', 'set', 'folk', 'ria', 'rey', 'ex', 'ight', 'by', 'thorpe', 'church'
 								,'wich', 'chapel', 'fax'
+							];
+
+					this.namelist = [];
+				}
+				else
+				{
+					this.namelist = args.namelist;
+				}
+			}
+		});
+
+		var CultureFranco = CultureLatin.extend({
+			initialize: function (args)
+			{
+				if (args.namelist == undefined)
+				{
+					this.prefixlist = [
+								'Roy', 'Abbe', 'Ange', 'Clair', 'Cler', 'Beau', 'Rive', 'Lange', 'Mont'
+								
+							];
+					this.suffixlist = [
+								'ville', 'bourg', '-sur-Mer', 'et', 'ais', 'eil', 'terre'
 							];
 
 					this.namelist = [];
