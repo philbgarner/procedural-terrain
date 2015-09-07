@@ -1220,24 +1220,31 @@
 					}
 				}
 			}
-			,moveCost: function (x, y)
+			,moveCost: function (x, y, modifiers)
 			{
 				var tile0 = this.get(x, y, 0).tileid;
 				var tile1 = this.get(x, y, 1).tileid;
 				var tile2 = this.get(x, y, 2).tileid;
-				
+
+				var sea = this.tset.getIndexByName("Sea");
+				var grass = this.tset.getIndexByName("Grass");
+				var mountain = this.tset.getIndexByName("Mountains");
+				var hill = this.tset.getIndexByName("Hills");
+
 				var cost = 0;
-				if (this.tset.tiledefs.contentJSON[tile0] != undefined)
+				console.log("Tiles:", tile0, this.tset.tiledefs);
+				if (this.tset.tset.coordlist[tile0] != undefined)
 				{
-					cost += this.tset.tiledefs.contentJSON[tile0].movecost;
+					cost += this.tset.tset.coordlist[tile0].movecost;
+
 				}				
-				if (this.tset.tiledefs.contentJSON[tile1] != undefined && tile1 > 0)
+				if (this.tset.tset.coordlist[tile1] != undefined && tile1 > 0)
 				{
-					cost += this.tset.tiledefs.contentJSON[tile1].movecost;
+					cost += this.tset.tset.coordlist[tile1].movecost;
 				}				
-				if (this.tset.tiledefs.contentJSON[tile2] != undefined && tile2 > 0)
+				if (this.tset.tset.coordlist[tile2] != undefined && tile2 > 0)
 				{
-					cost += this.tset.tiledefs.contentJSON[tile2].movecost;
+					cost += this.tset.tset.coordlist[tile2].movecost;
 				}				
 				return cost;
 			}
@@ -1252,10 +1259,11 @@
 				{
 					var destTileID = this.get(toX, toY, 0).tileid;
 					var destTile = this.tset.getIndex(destTileID);
+					var movecost = this.moveCost(toX, toY);
 
-					if (unit.move_points - destTile.movecost > 0)
+					if (unit.move_points - movecost >= 0)
 					{
-						unit.move_points -= this.moveCost(toX, toY);
+						unit.move_points -= movecost;
 						if (unit.move_points <= 0)
 						{
 							unit.moving = false;
@@ -2643,12 +2651,12 @@ function itemListFood()
 			,build: function()
 			{
 				// Increase the city's manufacturing points.
-				this.city.manufacturing += 5;
+				this.city.manufacturing += 25;
 			}
 			,destroy: function()
 			{
 				// Decrease the city's manufacturing points.
-				this.city.manufacturing -= 5;
+				this.city.manufacturing -= 25;
 			}
 		});
 		
@@ -2827,7 +2835,7 @@ function itemListFood()
 				this.food = 0;
 				this.food_growth = 50;
 				this.ownerID = undefined;
-				this.manufacturing = 5;
+				this.manufacturing = 25;
 
 				if (arg.manufacturing != undefined)
 				{
